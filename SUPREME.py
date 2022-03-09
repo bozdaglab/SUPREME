@@ -339,8 +339,9 @@ for trials in range(len(trial_combs)):
     tr_result_mf1 = str(round(statistics.median(av_tr_result_mf1), 3)) + '+-' + str(round(statistics.stdev(av_tr_result_mf1), 3))
     
     
-    df = pd.DataFrame(columns=['Comb No', 'Used Embeddings', 'Added Raw Features', 'Selected Params', 'Input Size', 'Train Acc', 'Train wF1','Train mF1', 'Test Acc', 'Test wF1','Test mF1'])
-    x = [trials, node_networks2, addFeatures, search.best_params_, data.x.shape[1],          tr_result_acc, tr_result_wf1, tr_result_mf1, result_acc, result_wf1, result_mf1]
+    df = pd.DataFrame(columns=['Comb No', 'Used Embeddings', 'Added Raw Features', 'Selected Params', 'Train Acc', 'Train wF1','Train mF1', 'Test Acc', 'Test wF1','Test mF1'])
+    x = [trials, node_networks2, addFeatures, search.best_params_, 
+         tr_result_acc, tr_result_wf1, tr_result_mf1, result_acc, result_wf1, result_mf1]
     df = df.append(pd.Series(x, index=df.columns), ignore_index=True)
     
     print('Combination ' + str(trials) + ' >  selected parameters = ' + str(search.best_params_) + 
