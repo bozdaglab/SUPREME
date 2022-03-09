@@ -319,8 +319,6 @@ for trials in range(len(trial_combs)):
         av_tr_result_acc.append(round(accuracy_score(y_train, tr_pred), 3))
         av_tr_result_wf1.append(round(f1_score(y_train, tr_pred, average='weighted'), 3))
         av_tr_result_mf1.append(round(f1_score(y_train, tr_pred, average='macro'), 3))
-        all_preds.append(preds)
-        all_y_preds.append(y_pred)
         
     if xtimes2 == 1:
         av_result_acc.append(round(accuracy_score(y_test, y_pred), 3))
