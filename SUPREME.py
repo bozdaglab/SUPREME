@@ -1,6 +1,6 @@
 # Options
 addRawFeat = True
-base_path = 'C:/Users/zk0061/Desktop/Current/SUPREME_code/SUPREME_github/SUPREME/'
+base_path = 'SUPREME/'
 dataset_name = 'sample_data'
 feature_networks_integration = ['clinical', 'cna', 'exp']
 node_networks = ['clinical', 'cna', 'exp']
