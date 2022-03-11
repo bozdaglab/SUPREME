@@ -40,7 +40,7 @@ Run `SUPREME.py` after generating the proper input data.
   - `train_valid_idx`: *<class 'numpy.ndarray'>* with the shape of *({Number of sample for training and validation,)* containing the sample indexes for training and validation.
   - `test_idx`: *<class 'numpy.ndarray'>* with the shape of *({Number of sample for test,)* containing the sample indexes for test.
  If `mask_values.pkl` does not exist in *data folder*, SUPREME will generate train and test splits.
----
+
 ***!! Note that*** sample size and the order of the samples should be the same for whole variables. Sample indexes should start from 0 till *sample size-1* consistent with the sample order.  
 - `labels.pkl` will have the labels of the ordered samples. (*i*th value has the label of sample with index *i*)  
 - `{datatype name}.pkl` will have the values of the ordered samples in each datatype (feature size could be datatype specific). (*i*th row has the feature values of sample with index *i*)  
