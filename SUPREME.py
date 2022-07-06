@@ -9,7 +9,7 @@ xtimes = 50
 xtimes2 = 10 
 
 optional_feat_selection = False
-boruta_runs = 20
+boruta_runs = 100
 boruta_top_features = 50
 
 max_epochs = 500
