@@ -15,7 +15,7 @@ Run `SUPREME.py` after generating the proper input data.
   - `dataset_name`: the data folder name in `base_path` including required input data for SUPREME run
   - `feature_networks_integration`: list of the datatypes to integrate as raw feature
   - `node_networks`: list of the datatypes to use (should have at least 1 datatype)
-  - `int_method`: method to integrate. Options have 'MLP' for fully connected neural network, 'XGBoost' for XGBoost, 'RF' for Random Forest, 'SVM' for Support Vector Machine. (default is 'MLP'.)
+  - `int_method`: method to integrate. Options have 'MLP' for Multi-layer Perceptron, 'XGBoost' for XGBoost, 'RF' for Random Forest, 'SVM' for Support Vector Machine. (default is 'MLP'.)
   - `optional_feat_selection`: *True* or *False*: If *True*, the top `boruta_top_features` are added as raw features; if *False*, all the raw features are added. (considered only if `addRawFeat` is *True*)
   
 - Adjust the following hyperparameters (lines 8-15):
