@@ -16,6 +16,7 @@ Run `SUPREME.py` after generating the proper input data.
   - `feature_networks_integration`: list of the datatypes to integrate as raw feature
   - `node_networks`: list of the datatypes to use (should have at least 1 datatype)
   - `int_method`: method to integrate. Options have 'MLP' for fully connected neural network, 'XGBoost' for XGBoost, 'RF' for Random Forest, 'SVM' for Support Vector Machine. (default is 'MLP'.)
+  - `optional_feat_selection`: *True* or *False*: If *True*, the top `boruta_top_features` are added as raw features; if *False*, all the raw features are added. (considered only if `addRawFeat` is *True*)
   
 - Adjust the following hyperparameters (lines 8-15):
   - `max_epochs`: maximum number of epoch (default is 500.)
@@ -25,8 +26,7 @@ Run `SUPREME.py` after generating the proper input data.
   - `hid_sizes`: list of values to try as hidden layer size (default is [16, 32, 64, 128, 256, 512].)
   - `xtimes`: the number of SUPREME runs to select hyperparameter combination (default: 50, should be more than 1.)
   - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination (default: 10, should be more than 1.) 
-  - `optional_feat_selection` : whether the top `boruta_top_features` are added as raw features, as opposed to all the raw features (considered if `addRawFeat` is *True*)
-  - `boruta_runs`: the number of Boruta runs to determine feature significance (default: 100, should be more than 1) (considered if `addRawFeat` and `optional_feat_selection` are *True*)
+  - `boruta_runs`: the number of Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*)
   
 ---
 
