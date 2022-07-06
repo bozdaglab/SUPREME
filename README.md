@@ -25,7 +25,9 @@ Run `SUPREME.py` after generating the proper input data.
   - `hid_sizes`: list of values to try as hidden layer size (default is [16, 32, 64, 128, 256, 512].)
   - `xtimes`: the number of SUPREME runs to select hyperparameter combination (default: 50, should be more than 1.)
   - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination (default: 10, should be more than 1.) 
-
+  - `optional_feat_selection` : whether the top `boruta_top_features` are added as raw features, as opposed to all the raw features (considered if `addRawFeat` is *True*)
+  - `boruta_runs`: the number of Boruta runs to determine feature significance (default: 100, should be more than 1) (considered if `addRawFeat` and `optional_feat_selection` are *True*)
+  
 ---
 
 ### Data Generation for a New Dataset
