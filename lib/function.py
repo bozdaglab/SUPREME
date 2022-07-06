@@ -13,7 +13,7 @@ def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None, truncat
     if 'engine' in to_excel_kwargs:
         to_excel_kwargs.pop('engine')
 
-    writer = pd.ExcelWriter(filename, engine='openpyxl', mode='a')
+    writer = pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay')
     writer.book = load_workbook(filename)
     if startrow is None and sheet_name in writer.book.sheetnames:
         startrow = writer.book[sheet_name].max_row
