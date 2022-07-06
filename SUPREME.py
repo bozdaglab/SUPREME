@@ -220,7 +220,7 @@ for trials in range(len(trial_combs)):
                 cur_emb = pickle.load(f)
             emb = torch.cat((emb, cur_emb), dim=1)
             
-     if addRawFeat == True:
+    if addRawFeat == True:
         is_first = 0
         addFeatures = feature_networks_integration
         for netw in addFeatures:
