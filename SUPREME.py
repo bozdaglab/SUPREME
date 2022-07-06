@@ -8,6 +8,10 @@ int_method = 'MLP' # 'MLP' or 'XGBoost' or 'RF' or 'SVM'
 xtimes = 50 
 xtimes2 = 10 
 
+optional_feat_selection = False
+boruta_runs = 20
+boruta_top_features = 50
+
 max_epochs = 500
 min_epochs = 200
 patience = 30
@@ -31,6 +35,15 @@ import numpy as np
 from torch_geometric.data import Data
 import os
 import torch
+import rpy2
+import rpy2.robjects as robjects
+from rpy2.robjects.packages import importr
+utils = importr('utils')
+rFerns = importr('rFerns')
+Boruta = importr('Boruta')
+pracma = importr('pracma')
+dplyr = importr('dplyr')
+import re
 
 
 def train():
@@ -207,13 +220,56 @@ for trials in range(len(trial_combs)):
                 cur_emb = pickle.load(f)
             emb = torch.cat((emb, cur_emb), dim=1)
             
-    if addRawFeat == True:
+     if addRawFeat == True:
+        is_first = 0
         addFeatures = feature_networks_integration
         for netw in addFeatures:
             file = base_path + 'data/' + dataset_name +'/'+ netw +'.pkl'
             with open(file, 'rb') as f:
                 feat = pickle.load(f)
-            emb = torch.cat((emb, torch.tensor(feat.values).float()), dim=1)
+            if is_first == 0:
+                allx = torch.tensor(feat.values).float()
+                is_first = 1
+            else:
+                allx = torch.cat((allx, torch.tensor(feat.values).float()), dim=1)   
+        
+        if optional_feat_selection == True:     
+            print('SUPREME is running the optional feature selection for raw features to integrate..')
+            allx_flat = [item for sublist in allx.tolist() for item in sublist]
+            allx_temp = robjects.FloatVector(allx_flat)
+            robjects.globalenv['allx_matrix'] = robjects.r('matrix')(allx_temp)
+            robjects.globalenv['allx_x'] = robjects.IntVector(allx.shape)
+            robjects.globalenv['labels_vector'] = robjects.IntVector(labels.tolist())
+            robjects.globalenv['top'] = boruta_top_features
+            robjects.globalenv['maxBorutaRuns'] = boruta_runs
+            robjects.r('''
+                require(rFerns)
+                require(Boruta)
+                labels_vector = as.factor(labels_vector)
+                allx_matrix <- Reshape(allx_matrix, allx_x[1])
+                allx_data = data.frame(allx_matrix)
+                colnames(allx_data) <- 1:allx_x[2]
+                allx_data <- allx_data %>%
+                    mutate('Labels' = labels_vector)
+                boruta.train <- Boruta(allx_data$Labels ~ ., data= allx_data, doTrace = 1, getImp=getImpFerns, holdHistory = T, maxRuns = maxBorutaRuns)
+                thr = sort(attStats(boruta.train)$medianImp, decreasing = T)[top]
+                boruta_signif = rownames(attStats(boruta.train)[attStats(boruta.train)$medianImp >= thr,])
+                    ''')
+            boruta_signif = robjects.globalenv['boruta_signif']
+            robjects.r.rm("allx_matrix")
+            robjects.r.rm("labels_vector")
+            robjects.r.rm("allx_data")
+            robjects.r.rm("boruta_signif")
+            robjects.r.rm("thr")
+            topx = []
+            for index in boruta_signif:
+                t_index=re.sub("`","",index)
+                topx.append((np.array(allx).T)[int(t_index)-1])
+            topx = np.array(topx)
+            emb = torch.cat((emb, torch.tensor(topx.T)), dim=1)
+            print('Top ' + str(boruta_top_features) + " features have been selected.")
+        else:
+            emb = torch.cat((emb, allx), dim=1)
     
     data = Data(x=emb, y=labels)
     train_mask = np.array([i in set(train_valid_idx) for i in range(data.x.shape[0])])
