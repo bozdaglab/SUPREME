@@ -121,7 +121,7 @@ for netw in node_networks:
                 colnames(feat_data) <- 1:feat_x[2]
                 feat_data <- feat_data %>%
                     mutate('Labels' = labels_vector)
-                boruta.train <- Boruta(feat_data$Labels ~ ., data= feat_data, doTrace = 1, getImp=getImpFerns, holdHistory = T, maxRuns = maxBorutaRuns)
+                boruta.train <- Boruta(feat_data$Labels ~ ., data= feat_data, doTrace = 0, getImp=getImpFerns, holdHistory = T, maxRuns = maxBorutaRuns)
                 thr = sort(attStats(boruta.train)$medianImp, decreasing = T)[top]
                 boruta_signif = rownames(attStats(boruta.train)[attStats(boruta.train)$medianImp >= thr,])
                     ''')
@@ -302,7 +302,7 @@ for trials in range(len(trial_combs)):
                 colnames(allx_data) <- 1:allx_x[2]
                 allx_data <- allx_data %>%
                     mutate('Labels' = labels_vector)
-                boruta.train <- Boruta(allx_data$Labels ~ ., data= allx_data, doTrace = 1, getImp=getImpFerns, holdHistory = T, maxRuns = maxBorutaRuns)
+                boruta.train <- Boruta(allx_data$Labels ~ ., data= allx_data, doTrace = 0, getImp=getImpFerns, holdHistory = T, maxRuns = maxBorutaRuns)
                 thr = sort(attStats(boruta.train)$medianImp, decreasing = T)[top]
                 boruta_signif = rownames(attStats(boruta.train)[attStats(boruta.train)$medianImp >= thr,])
                     ''')
