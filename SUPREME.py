@@ -477,6 +477,6 @@ for trials in range(len(trial_combs)):
             function.append_df_to_excel(excel_file, df, sheet_name = int_method, index = False, header = False)
 
 end = time.time()
-print('It took ' + str(end - start) + ' seconds for all runs.')
+print('It took ' + str(round(end - start, 1)) + ' seconds for all runs.')
 print('SUPREME is done.')
 print('Results are available at ' + excel_file)
