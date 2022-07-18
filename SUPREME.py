@@ -8,6 +8,8 @@ int_method = 'MLP' # 'MLP' or 'XGBoost' or 'RF' or 'SVM'
 xtimes = 50 
 xtimes2 = 10 
 
+feature_selection_per_network = [False, False, False]
+top_features_per_network = [50, 50, 50]
 optional_feat_selection = False
 boruta_runs = 100
 boruta_top_features = 50
@@ -44,6 +46,14 @@ Boruta = importr('Boruta')
 pracma = importr('pracma')
 dplyr = importr('dplyr')
 import re
+
+enable_CUDA = False
+gpu_id = 0
+
+if  enable_CUDA and torch.cuda.is_available():
+    device = torch.device('cuda')
+else:
+    device = torch.device('cpu')
 
 
 def train():
@@ -93,11 +103,52 @@ for netw in node_networks:
     file = base_path + 'data/' + dataset_name +'/'+ netw +'.pkl'
     with open(file, 'rb') as f:
         feat = pickle.load(f)
+        if feature_selection_per_network[node_networks.index(netw)] and top_features_per_network[node_networks.index(netw)] < feat.values.shape[1]:     
+            print('SUPREME is running the optional feature selection for input feature ' + netw + '..')
+            feat_flat = [item for sublist in feat.values.tolist() for item in sublist]
+            feat_temp = robjects.FloatVector(feat_flat)
+            robjects.globalenv['feat_matrix'] = robjects.r('matrix')(feat_temp)
+            robjects.globalenv['feat_x'] = robjects.IntVector(feat.shape)
+            robjects.globalenv['labels_vector'] = robjects.IntVector(labels.tolist())
+            robjects.globalenv['top'] = top_features_per_network[node_networks.index(netw)]
+            robjects.globalenv['maxBorutaRuns'] = boruta_runs
+            robjects.r('''
+                require(rFerns)
+                require(Boruta)
+                labels_vector = as.factor(labels_vector)
+                feat_matrix <- Reshape(feat_matrix, feat_x[1])
+                feat_data = data.frame(feat_matrix)
+                colnames(feat_data) <- 1:feat_x[2]
+                feat_data <- feat_data %>%
+                    mutate('Labels' = labels_vector)
+                boruta.train <- Boruta(feat_data$Labels ~ ., data= feat_data, doTrace = 1, getImp=getImpFerns, holdHistory = T, maxRuns = maxBorutaRuns)
+                thr = sort(attStats(boruta.train)$medianImp, decreasing = T)[top]
+                boruta_signif = rownames(attStats(boruta.train)[attStats(boruta.train)$medianImp >= thr,])
+                    ''')
+            boruta_signif = robjects.globalenv['boruta_signif']
+            robjects.r.rm("feat_matrix")
+            robjects.r.rm("labels_vector")
+            robjects.r.rm("feat_data")
+            robjects.r.rm("boruta_signif")
+            robjects.r.rm("thr")
+            topx = []
+            for index in boruta_signif:
+                t_index=re.sub("`","",index)
+                topx.append((np.array(feat.values).T)[int(t_index)-1])
+            topx = np.array(topx)
+            values = torch.tensor(topx.T, device=device)
+            print('Top ' + str(top_features_per_network[node_networks.index(netw)]) + " features have been selected.")
+        elif feature_selection_per_network[node_networks.index(netw)] and top_features_per_network[node_networks.index(netw)] >= feat.values.shape[1]:
+            print('Feature selection is ignored for network ' + netw + ' since the defined number of top features is not less than the number of features.')
+            values = feat.values
+        else:
+            values = feat.values
+        
     if is_first == 0:
-        new_x = torch.tensor(feat.values).float()
+        new_x = torch.tensor(values, device=device).float()
         is_first = 1
     else:
-        new_x = torch.cat((new_x, torch.tensor(feat.values).float()), dim=1)
+        new_x = torch.cat((new_x, torch.tensor(values, device=device).float()), dim=1)
 
 for n in range(len(node_networks)):
     netw_base = node_networks[n]
@@ -305,11 +356,20 @@ for trials in range(len(trial_combs)):
         fit_params = {'early_stopping_rounds': 10,
                      'eval_metric': 'mlogloss',
                      'eval_set': [(X_train, y_train)]}
-        search = RandomizedSearchCV(estimator = XGBClassifier(use_label_encoder=False, n_estimators = 1000, 
-                            fit_params = fit_params, objective="multi:softprob", eval_metric = "mlogloss", 
-                            verbosity = 0), return_train_score = True, scoring = 'f1_macro',
-                            param_distributions = params, cv = 4, n_iter = xtimes, verbose = 0)
+        
+        if enable_CUDA and torch.cuda.is_available(): 
+            search = RandomizedSearchCV(estimator = XGBClassifier(use_label_encoder=False, n_estimators = 1000, 
+                                                                  fit_params = fit_params, objective="multi:softprob", eval_metric = "mlogloss", 
+                                                                  verbosity = 0, tree_method = 'gpu_hist', gpu_id=gpu_id), return_train_score = True, scoring = 'f1_macro',
+                                        param_distributions = params, cv = 4, n_iter = xtimes, verbose = 0)
+        else:          
+            search = RandomizedSearchCV(estimator = XGBClassifier(use_label_encoder=False, n_estimators = 1000, 
+                                                                  fit_params = fit_params, objective="multi:softprob", eval_metric = "mlogloss", 
+                                                                  verbosity = 0), return_train_score = True, scoring = 'f1_macro',
+                                        param_distributions = params, cv = 4, n_iter = xtimes, verbose = 0)
+        
         search.fit(X_train, y_train)
+        
         model = XGBClassifier(use_label_encoder=False, objective="multi:softprob", eval_metric = "mlogloss", verbosity = 0,
                               n_estimators = 1000, fit_params = fit_params,
                               reg_alpha = search.best_params_['reg_alpha'],
