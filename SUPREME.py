@@ -143,13 +143,15 @@ for netw in node_networks:
             values = feat.values
         else:
             values = feat.values
-        
+    
     if is_first == 0:
         new_x = torch.tensor(values, device=device).float()
         is_first = 1
     else:
         new_x = torch.cat((new_x, torch.tensor(values, device=device).float()), dim=1)
-
+    
+    print('SUPREME has ' + str(values.shape[1]) + ' features for ' + netw + '.')
+    
 for n in range(len(node_networks)):
     netw_base = node_networks[n]
     print('SUPREME is generating ' + netw_base + ' embedding..')
