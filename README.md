@@ -29,7 +29,9 @@ Run `SUPREME.py` after generating the proper input data.
   - `xtimes`: the number of SUPREME runs to select hyperparameter combination (default: 50, should be more than 1.)
   - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination (default: 10, should be more than 1.) 
   - `boruta_runs`: the number of Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*)
-  
+  - `enable_CUDA`: *True* or *False*: Enables CUDA if *True*.
+  - `gpu_id`: default is 0.
+
 ---
 
 ### Data Generation for a New Dataset
