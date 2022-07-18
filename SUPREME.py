@@ -104,7 +104,7 @@ for netw in node_networks:
     with open(file, 'rb') as f:
         feat = pickle.load(f)
         if feature_selection_per_network[node_networks.index(netw)] and top_features_per_network[node_networks.index(netw)] < feat.values.shape[1]:     
-            print('SUPREME is running the optional feature selection for input feature ' + netw + '..')
+            print('SUPREME is running feature selection for input feature of ' + netw + '..')
             feat_flat = [item for sublist in feat.values.tolist() for item in sublist]
             feat_temp = robjects.FloatVector(feat_flat)
             robjects.globalenv['feat_matrix'] = robjects.r('matrix')(feat_temp)
