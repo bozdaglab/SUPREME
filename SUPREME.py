@@ -140,7 +140,6 @@ for netw in node_networks:
                 topx.append((np.array(feat.values).T)[int(t_index)-1])
             topx = np.array(topx)
             values = torch.tensor(topx.T, device=device)
-            print('Top ' + str(values.shape[1]) + " features have been selected.")
         elif feature_selection_per_network[node_networks.index(netw)] and top_features_per_network[node_networks.index(netw)] >= feat.values.shape[1]:
             print('SUPREME ignored feature selection for network ' + netw + ' since the defined number of top features is not less than the number of features.')
             values = feat.values
