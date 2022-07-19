@@ -37,15 +37,17 @@ import numpy as np
 from torch_geometric.data import Data
 import os
 import torch
-import rpy2
-import rpy2.robjects as robjects
-from rpy2.robjects.packages import importr
-utils = importr('utils')
-rFerns = importr('rFerns')
-Boruta = importr('Boruta')
-pracma = importr('pracma')
-dplyr = importr('dplyr')
-import re
+
+if ((True in feature_selection_per_network) or (optional_feat_selection == True)):
+    import rpy2
+    import rpy2.robjects as robjects
+    from rpy2.robjects.packages import importr
+    utils = importr('utils')
+    rFerns = importr('rFerns')
+    Boruta = importr('Boruta')
+    pracma = importr('pracma')
+    dplyr = importr('dplyr')
+    import re
 
 enable_CUDA = False
 gpu_id = 0
