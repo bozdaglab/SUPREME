@@ -166,8 +166,8 @@ for n in range(len(node_networks)):
             av_valid_losses = list()
 
             for ii in range(xtimes2):
-                data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values).long(),
-                            edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values).float(), y=labels) 
+                data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values, device=device).long(),
+                            edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values, device=device).float(), y=labels) 
                 X = data.x[train_valid_idx]
                 y = data.y[train_valid_idx]
                 rskf = RepeatedStratifiedKFold(n_splits=4, n_repeats=1)
@@ -179,10 +179,10 @@ for n in range(len(node_networks)):
 
                 train_mask = np.array([i in set(train_idx) for i in range(data.x.shape[0])])
                 valid_mask = np.array([i in set(valid_idx) for i in range(data.x.shape[0])])
-                data.valid_mask = torch.tensor(valid_mask)
-                data.train_mask = torch.tensor(train_mask)
+                data.valid_mask = torch.tensor(valid_mask, device=device)
+                data.train_mask = torch.tensor(train_mask, device=device)
                 test_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
-                data.test_mask = torch.tensor(test_mask)
+                data.test_mask = torch.tensor(test_mask, device=device)
 
                 in_size = data.x.shape[1]
                 out_size = torch.unique(data.y).shape[0]
@@ -214,15 +214,15 @@ for n in range(len(node_networks)):
                 best_emb_lr = learning_rate
                 best_emb_hs = hid_size
                 
-    data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values).long(),
-                edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values).float(), y=labels) 
+    data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values, device=device).long(),
+                edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values, device=device).float(), y=labels) 
     X = data.x[train_valid_idx]
     y = data.y[train_valid_idx]
     
     train_mask = np.array([i in set(train_valid_idx) for i in range(data.x.shape[0])])
-    data.train_mask = torch.tensor(train_mask)
+    data.train_mask = torch.tensor(train_mask, device=device)
     valid_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
-    data.valid_mask = torch.tensor(valid_mask)
+    data.valid_mask = torch.tensor(valid_mask, device=device)
     
     in_size = data.x.shape[1]
     out_size = torch.unique(data.y).shape[0]
@@ -283,10 +283,10 @@ for trials in range(len(trial_combs)):
             with open(file, 'rb') as f:
                 feat = pickle.load(f)
             if is_first == 0:
-                allx = torch.tensor(feat.values).float()
+                allx = torch.tensor(feat.values, device=device).float()
                 is_first = 1
             else:
-                allx = torch.cat((allx, torch.tensor(feat.values).float()), dim=1)   
+                allx = torch.cat((allx, torch.tensor(feat.values, device=device).float()), dim=1)   
         
         if optional_feat_selection == True:     
             print('SUPREME is running the optional feature selection for raw features to integrate..')
@@ -321,16 +321,16 @@ for trials in range(len(trial_combs)):
                 t_index=re.sub("`","",index)
                 topx.append((np.array(allx).T)[int(t_index)-1])
             topx = np.array(topx)
-            emb = torch.cat((emb, torch.tensor(topx.T)), dim=1)
+            emb = torch.cat((emb, torch.tensor(topx.T, device=device)), dim=1)
             print('Top ' + str(boruta_top_features) + " features have been selected.")
         else:
             emb = torch.cat((emb, allx), dim=1)
     
     data = Data(x=emb, y=labels)
     train_mask = np.array([i in set(train_valid_idx) for i in range(data.x.shape[0])])
-    data.train_mask = torch.tensor(train_mask)
+    data.train_mask = torch.tensor(train_mask, device=device)
     test_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
-    data.test_mask = torch.tensor(test_mask)
+    data.test_mask = torch.tensor(test_mask, device=device)
     X_train = pd.DataFrame(data.x[data.train_mask].numpy())
     X_test = pd.DataFrame(data.x[data.test_mask].numpy())
     y_train = pd.DataFrame(data.y[data.train_mask].numpy()).values.ravel()
