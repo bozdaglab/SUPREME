@@ -55,6 +55,9 @@ if  enable_CUDA and torch.cuda.is_available():
 else:
     device = torch.device('cpu')
 
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 def train():
     model.train()
