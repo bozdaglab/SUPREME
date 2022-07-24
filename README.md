@@ -45,6 +45,7 @@ Run `SUPREME.py` after generating the proper input data.
 - The *data folder* might have a file named `mask_values.pkl` if the user wants to specify test samples. `mask_values.pkl` will have two variables in it:
   - `train_valid_idx`: *<class 'numpy.ndarray'>* with the shape of *({Number of sample for training and validation,)* containing the sample indexes for training and validation.
   - `test_idx`: *<class 'numpy.ndarray'>* with the shape of *({Number of sample for test,)* containing the sample indexes for test.
+ 
  If `mask_values.pkl` does not exist in *data folder*, SUPREME will generate train and test splits.
 
 ***!! Note that*** sample size and the order of the samples should be the same for whole variables. Sample indexes should start from 0 till *sample size-1* consistent with the sample order.  
