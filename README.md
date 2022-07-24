@@ -1,4 +1,4 @@
-# SUPREME
+# SUPREME (A SUbtype PREdiction MEthodology)
 SUPREME: A Graph Convolutional Neural Network (GCN)-based approach for cancer subtype prediction
 
 ---
@@ -10,13 +10,13 @@ Run `SUPREME.py` after generating the proper input data.
 ### User Options
 
 - Adjust the following variables (lines 2-7):
-  - `addRawFeat`: *True* or *False*: If *True*, raw features from listed datatypes in `features_to_integrate` will be integrated; if *False*, no raw features will be integrated.
+  - `addRawFeat`: *True* or *False*: If *True*, raw features from listed datatypes in `features_to_integrate` will be integrated during prediction; if *False*, no raw features will be integrated (default is *True*). 
   - `base_path`: the path to SUPREME github folder
-  - `dataset_name`: the data folder name in `base_path` including required input data for SUPREME run
-  - `feature_networks_integration`: list of the datatypes to integrate as raw feature
-  - `node_networks`: list of the datatypes to use (should have at least 1 datatype)
-  - `int_method`: method to integrate. Options have 'MLP' for Multi-layer Perceptron, 'XGBoost' for XGBoost, 'RF' for Random Forest, 'SVM' for Support Vector Machine. (default is 'MLP'.)
-  - `feature_selection_per_network`: list of the *True* or *False*: If *True*, the corresponding `top_features_per_network` features are selected from feature selection algorithm. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
+  - `dataset_name`: the data folder name in `base_path` including required input data to run SUPREME
+  - `feature_networks_integration`: list of the datatypes to integrate as raw features
+  - `node_networks`: list of the datatypes to use (should have at least one datatype)
+  - `int_method`: method to integrate during the prediction of subtypes. Options are 'MLP' for Multi-layer Perceptron, 'XGBoost' for XGBoost, 'RF' for Random Forest, 'SVM' for Support Vector Machine. (default is 'MLP'.)
+  - `feature_selection_per_network`: a list of *True* or *False*: If *True*, the corresponding `top_features_per_network` features are selected from feature selection algorithm. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
   - `top_features_per_network`: list of numbers: If corresponding `feature_selection_per_network` is *True* and corresponding `top_features_per_network` is less than the input feature number, then feature selection algorithm will be applied for that network. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
   - `optional_feat_selection`: *True* or *False*: If *True*, the top `boruta_top_features` are added as raw features; if *False*, all the raw features are added. (considered only if `addRawFeat` is *True*)
   
