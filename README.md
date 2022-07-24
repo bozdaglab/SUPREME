@@ -1,5 +1,5 @@
 # SUPREME
-SUPREME: A GCN based approach for cancer subtype prediction
+SUPREME: A Graph Convolutional Neural Network (GCN)-based approach for cancer subtype prediction
 
 ---
 
