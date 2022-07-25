@@ -4,27 +4,33 @@ SUPREME (a cancer `SU`btype `PRE`diction `ME`thodology)
 
 An integrative node classification framework, called SUPREME (a **su**btype **pre**diction **me**thodology), that utilizes graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features. This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks. In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks constructed based on multiple biological datasets from breast tumor samples.
 
+First, SUPREME generates network-specific patient embeddings from each datatype separately. Then using those embedding, it does cancer subtype prediction through all the combinations of embeddings, and report the evaluation results.
+
 ---
 
 ## How to run SUPREME?
 
 Run `SUPREME.py` after generating the proper input data.
 
-#### Input files:
-Files in the *sample_data* folder under *data* folder: 
+### Input files: 
+Files under the *sample_data* folder under *data* folder: 
 - `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). first column is index, second column is label starting from 0 till {number of subtype}-1.  
+- Input features: *i*th row has the feature values of sample with index *i*. (Still, we have column names and row names, even not considered.)
+  - `clinical.csv`: 250 Samples (row) x 10 normalized clinical features (column)
+  - `cna.csv`: 250 Samples (row) x 250 normalized copy number aberration features (column)
+  - `exp.csv`: 250 Samples (row) x 250 normalized gene expression features (column)
 
-Features: *i*th row has the feature values of sample with index *i*. (Still, we have column names and row names, even not considered.)
-- `clinical.csv`: 250 Samples (row) x 10 normalized clinical features (column)
-- `cna.csv`: 250 Samples (row) x 250 normalized copy number aberration features (column)
-- `exp.csv`: 250 Samples (row) x 250 normalized gene expression features (column)
+- Input networks: First column is unnecessary, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
+  - `edges_clinical.pkl`: Clinical-based patient similarity network 
+  - `edges_cna.pkl`: Copy number aberration-based patient similarity network
+  - `edges_exp.pkl`: Gene expression-based patient similarity network
 
-Networks: First column is unnecessary, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
-- `edges_clinical.pkl`: Clinical-based patient similarity network 
-- `edges_cna.pkl`: Copy number aberration-based patient similarity network
-- `edges_exp.pkl`: Gene expression-based patient similarity network
+Configuration files under *lib* folder
+- `function.py`:
+- `module.py`:
 
-Output files:
+### Output files:
+Files under the *SUPREME_sample_data_results* folder
 - `Emb_clinical.csv`: Clinical-based patient embedding
 - `Emb_cna.csv`: Copy number aberration-based patient embedding
 - `Emb_exp.csv`: Gene expression-based patient embedding
