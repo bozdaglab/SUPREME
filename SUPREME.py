@@ -52,8 +52,10 @@ if ((True in feature_selection_per_network) or (optional_feat_selection == True)
 enable_CUDA = False
 gpu_id = 0
 
-if  enable_CUDA and torch.cuda.is_available():
+if  enable_CUDA and torch.cuda.is_available() and gpu_id == 0:
     device = torch.device('cuda')
+elif (gpu_id != 0 and torch.cuda.is_available and enable_CUDA):
+    device = torch.cuda.device('cuda:' + str(gpu_id))
 else:
     device = torch.device('cpu')
 
@@ -62,9 +64,15 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 def train():
-    model.train()
+    if enable_CUDA and torch.cuda.is_available():
+      model.cuda().train()
+    else:
+      model.train()
     optimizer.zero_grad()
-    out, emb1 = model(data)
+    if enable_CUDA and torch.cuda.is_available():
+      out, emb1 = model(data.cuda())
+    else:
+       out, emb1 = model(data)
     loss = criterion(out[data.train_mask], data.y[data.train_mask])
     loss.backward()
     optimizer.step()
@@ -333,10 +341,10 @@ for trials in range(len(trial_combs)):
     data.train_mask = torch.tensor(train_mask, device=device)
     test_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
     data.test_mask = torch.tensor(test_mask, device=device)
-    X_train = pd.DataFrame(data.x[data.train_mask].numpy())
-    X_test = pd.DataFrame(data.x[data.test_mask].numpy())
-    y_train = pd.DataFrame(data.y[data.train_mask].numpy()).values.ravel()
-    y_test = pd.DataFrame(data.y[data.test_mask].numpy()).values.ravel()
+    X_train = pd.DataFrame(data.x[data.train_mask].cpu().numpy())
+    X_test = pd.DataFrame(data.x[data.test_mask].cpu().numpy())
+    y_train = pd.DataFrame(data.y[data.train_mask].cpu().numpy()).values.ravel()
+    y_test = pd.DataFrame(data.y[data.test_mask].cpu().numpy()).values.ravel()
     
     if int_method == 'MLP':
         params = {'hidden_layer_sizes': [(16,), (32,),(64,),(128,),(256,),(512,), (32, 32), (64, 32), (128, 32), (256, 32), (512, 32)],
@@ -432,7 +440,7 @@ for trials in range(len(trial_combs)):
         model.fit(X_train,y_train)
         predictions = model.predict(X_test)
         y_pred = [round(value) for value in predictions]
-        preds = model.predict(pd.DataFrame(data.x.numpy()))
+        preds = model.predict(pd.DataFrame(data.x.cpu().numpy()))
         av_result_acc.append(round(accuracy_score(y_test, y_pred), 3))
         av_result_wf1.append(round(f1_score(y_test, y_pred, average='weighted'), 3))
         av_result_mf1.append(round(f1_score(y_test, y_pred, average='macro'), 3))
