@@ -1,11 +1,6 @@
 # SUPREME (A SUbtype PREdiction MEthodology)
-SUPREME: A Graph Convolutional Neural Network (GCN)-based approach for cancer subtype prediction
-We introduced a novel node classification framework, called SUPREME (a ++su++ btype ++pre++diction ++me++thodology), that utilizes
-graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features
-(Figure 1). This framework is model-agnostic and could be applied to any classification problem with properly processed
-datatypes and networks. In this work, SUPREME was applied specifically to the breast cancer subtype prediction problem
-by applying convolution on patient similarity networks constructed based on multiple biological datasets from breast tumor
-samples
+**SUPREME: A Graph Convolutional Neural Network (GCN)-based approach for cancer subtype prediction**
+We introduced a novel node classification framework, called SUPREME (a **su**btype **pre**diction **me**thodology), that utilizes graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features. This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks. In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks constructed based on multiple biological datasets from breast tumor samples.
 
 ---
 
