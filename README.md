@@ -10,6 +10,25 @@ An integrative node classification framework, called SUPREME (a **su**btype **pr
 
 Run `SUPREME.py` after generating the proper input data.
 
+#### Input files:
+Files in the *sample_data* folder under *data* folder: 
+- `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). first column is index, second column is label starting from 0 till {number of subtype}-1.  
+
+Features: *i*th row has the feature values of sample with index *i*. (Still, we have column names and row names, even not considered.)
+- `clinical.csv`: 250 Samples (row) x 10 normalized clinical features (column)
+- `cna.csv`: 250 Samples (row) x 250 normalized copy number aberration features (column)
+- `exp.csv`: 250 Samples (row) x 250 normalized gene expression features (column)
+
+Networks: First column is unnecessary, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
+- `edges_clinical.pkl`: Clinical-based patient similarity network 
+- `edges_cna.pkl`: Copy number aberration-based patient similarity network
+- `edges_exp.pkl`: Gene expression-based patient similarity network
+
+Output files:
+- `Emb_clinical.csv`: Clinical-based patient embedding
+- `Emb_cna.csv`: Copy number aberration-based patient embedding
+- `Emb_exp.csv`: Gene expression-based patient embedding
+- `SUPREME_results.xlsx`: Evaluation results for each embedding combination
 ---
 
 ## How to customize SUPREME?
