@@ -16,9 +16,9 @@ Run `SUPREME.py` after generating the proper input data.
 Files under the *sample_data* folder under *data* folder: 
 - `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). first column is index, second column is label starting from 0 till {number of subtype}-1.  
 - Input features: *i*th row has the feature values of sample with index *i*. (Still, we have column names and row names, even not considered.)
-  - `clinical.csv`: 250 Samples (row) x 10 normalized clinical features (column)
-  - `cna.csv`: 250 Samples (row) x 250 normalized copy number aberration features (column)
-  - `exp.csv`: 250 Samples (row) x 250 normalized gene expression features (column)
+  - `clinical.csv`: 257 Samples (row) x 10 normalized clinical features (column)
+  - `cna.csv`: 257 Samples (row) x 250 normalized copy number aberration features (column)
+  - `exp.csv`: 257 Samples (row) x 250 normalized gene expression features (column)
 
 - Input networks: First column is unnecessary, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
   - `edges_clinical.pkl`: Clinical-based patient similarity network 
