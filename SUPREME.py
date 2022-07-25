@@ -20,6 +20,8 @@ patience = 30
 learning_rates = [0.01, 0.001, 0.0001]
 hid_sizes = [16, 32, 64, 128, 256, 512] 
 
+random_state = 404
+
 # SUPREME run
 print('SUPREME is setting up!')
 from lib import module, function
