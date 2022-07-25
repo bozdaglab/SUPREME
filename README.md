@@ -10,6 +10,10 @@ An integrative node classification framework, called SUPREME (a **su**btype **pr
 
 Run `SUPREME.py` after generating the proper input data.
 
+---
+
+## How to customize SUPREME?
+
 ### User Options
 
 - Adjust the following variables (lines 2-7):
