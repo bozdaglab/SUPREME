@@ -16,9 +16,9 @@ Run `SUPREME.py` after generating the proper input data.
   - `feature_networks_integration`: list of the datatypes to integrate as raw features
   - `node_networks`: list of the datatypes to use (should have at least one datatype)
   - `int_method`: method to integrate during the prediction of subtypes. Options are 'MLP' for Multi-layer Perceptron, 'XGBoost' for XGBoost, 'RF' for Random Forest, 'SVM' for Support Vector Machine. (default is 'MLP'.)
-  - `feature_selection_per_network`: a list of *True* or *False*: If *True*, the corresponding `top_features_per_network` features are selected from feature selection algorithm. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
+  - `feature_selection_per_network`: a list of *True* or *False*: If *True*, the corresponding `top_features_per_network` features are selected from feature selection algorithm; if *False*, all features are used for integration.. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
   - `top_features_per_network`: list of numbers: If corresponding `feature_selection_per_network` is *True* and corresponding `top_features_per_network` is less than the input feature number, then feature selection algorithm will be applied for that network. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
-  - `optional_feat_selection`: *True* or *False*: If *True*, the top `boruta_top_features` are added as raw features; if *False*, all the raw features are added. (considered only if `addRawFeat` is *True*)
+  - `optional_feat_selection`: *True* or *False*: If *True*, the top `boruta_top_features` features from each combination of integrated networks are added as raw features; if *False*, all the raw features are added to the embedding. (considered only if `addRawFeat` is *True*)
   
 - Adjust the following hyperparameters (lines 8-15):
   - `max_epochs`: maximum number of epoch (default is 500.)
@@ -26,11 +26,11 @@ Run `SUPREME.py` after generating the proper input data.
   - `patience`: patience for early stopping (default is 30.)
   - `learning_rates`: list of values to try as learning rate (default is [0.001, 0.01, 0.1].)
   - `hid_sizes`: list of values to try as hidden layer size (default is [16, 32, 64, 128, 256, 512].)
-  - `xtimes`: the number of SUPREME runs to select hyperparameter combination (default: 50, should be more than 1.)
-  - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination (default: 10, should be more than 1.) 
-  - `boruta_runs`: the number of Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*)
+  - `xtimes`: the number of SUPREME runs to select the best hyperparameter combination during hyperparameter tuning as part of Randomized Search (default: 50, should be more than 1.)
+  - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination, used to generate the median statistics (default: 10, should be more than 1.) 
+  - `boruta_runs`: the number of times Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*, or if any of the values in `feature_selection_per_network` are *True*)
   - `enable_CUDA`: *True* or *False*: Enables CUDA if *True*.
-  - `gpu_id`: default is 0.
+  - `gpu_id`: For users with multiple GPUs, this specifies the index of the GPU device to use (default is 0.)
 
 ---
 
