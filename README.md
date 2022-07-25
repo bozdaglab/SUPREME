@@ -37,7 +37,7 @@ Run `SUPREME.py` after generating the proper input data.
   - `xtimes`: the number of SUPREME runs to select the best hyperparameter combination during hyperparameter tuning as part of Randomized Search (default: 50, should be more than 1.)
   - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination, used to generate the median statistics (default: 10, should be more than 1.) 
   - `boruta_runs`: the number of times Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*, or if any of the values in `feature_selection_per_network` are *True*)
-  - `enable_CUDA`: *True* or *False*: Enables CUDA if *True*.
+  - `enable_CUDA`: *True* or *False*: Enables CUDA if *True* (default is *False*).
   - `gpu_id`: For users with multiple GPUs, this specifies the index of the GPU device to use (default is 0.)
 
 ---
