@@ -1,5 +1,11 @@
 # SUPREME (A SUbtype PREdiction MEthodology)
 SUPREME: A Graph Convolutional Neural Network (GCN)-based approach for cancer subtype prediction
+We introduced a novel node classification framework, called SUPREME (a ++su++btype ++pre++diction ++me++thodology), that utilizes
+graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features
+(Figure 1). This framework is model-agnostic and could be applied to any classification problem with properly processed
+datatypes and networks. In this work, SUPREME was applied specifically to the breast cancer subtype prediction problem
+by applying convolution on patient similarity networks constructed based on multiple biological datasets from breast tumor
+samples
 
 ---
 
@@ -18,6 +24,7 @@ Run `SUPREME.py` after generating the proper input data.
   - `int_method`: method to integrate during the prediction of subtypes. Options are 'MLP' for Multi-layer Perceptron, 'XGBoost' for XGBoost, 'RF' for Random Forest, 'SVM' for Support Vector Machine. (default is 'MLP'.)
   - `feature_selection_per_network`: a list of *True* or *False*: If *True*, the corresponding `top_features_per_network` features are selected from feature selection algorithm; if *False*, all features are used for integration. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
   - `top_features_per_network`: list of numbers: If corresponding `feature_selection_per_network` is *True* and corresponding `top_features_per_network` is less than the input feature number, then feature selection algorithm will be applied for that network. (order of `feature_selection_per_network` and `top_features_per_network` are same as order of `node_networks`)
+  - `boruta_top_features`: the number of top raw features to be integrated as raw features if `optional_feat_selection` and `addRawFeat` are *True*; otherwise ignored.
   - `optional_feat_selection`: *True* or *False*: If *True*, the top `boruta_top_features` features from each combination of integrated networks are added as raw features; if *False*, all the raw features are added to the embedding. (considered only if `addRawFeat` is *True*)
   
 - Adjust the following hyperparameters (lines 8-15):
