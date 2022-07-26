@@ -19,10 +19,10 @@ Parameters:
 `-data`: It specifies the data location to use under the 'data' folder (default is 'sample data').
 
 Example runs:
-`python SUPREME.py`: runs SUPREME using pkl data files under 'data/sample_data' folder
-`python SUPREME.py -csv`:  runs SUPREME using csv data files under 'data/sample_data' folder
-`python SUPREME.py -data user_defined_data`:  runs SUPREME using pkl data files under 'data/user_defined_data' folder
-`python SUPREME.py -csv -data user_defined_data`:  runs SUPREME using csv data files under 'data/user_defined_data' folder
+- `python SUPREME.py`: runs SUPREME using pkl data files under 'data/sample_data' folder
+- `python SUPREME.py -csv`:  runs SUPREME using csv data files under 'data/sample_data' folder
+- `python SUPREME.py -data user_defined_data`:  runs SUPREME using pkl data files under 'data/user_defined_data' folder
+- `python SUPREME.py -csv -data user_defined_data`:  runs SUPREME using csv data files under 'data/user_defined_data' folder
 
 
 ### Input files: 
