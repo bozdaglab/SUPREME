@@ -11,33 +11,35 @@ First, SUPREME generates network-specific patient embeddings from each datatype 
 ## How to run SUPREME?
 
 Run `SUPREME.py` after generating the proper input data.
+- If you use `.pkl` files as input files, you can run SUPREME from the command line: `python SUPREME.py`.
+- If you use `.csv` files as input files, you **should** run SUPREME from the command line with the parameter `-csv`: `python SUPREME.py -csv`. After using this command, `.pkl` files will be automatically generated for each of the input files.
 
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
-- `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). first column is index, second column is label starting from 0 till {number of subtype}-1.  
+- `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). first column is label starting from 0 till {number of subtype}-1. This file has headers, so there are {number of sample}+1 lines. 
 - Input features: *i*th row has the feature values of sample with index *i*. (Still, we have column names and row names, even not considered.)
   - `clinical.csv`: 257 Samples (row) x 10 normalized clinical features (column)
   - `cna.csv`: 257 Samples (row) x 250 normalized copy number aberration features (column)
   - `exp.csv`: 257 Samples (row) x 250 normalized gene expression features (column)
 
 - Input networks: First column is unnecessary, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
-  - `edges_clinical.pkl`: Clinical-based patient similarity network 
-  - `edges_cna.pkl`: Copy number aberration-based patient similarity network
-  - `edges_exp.pkl`: Gene expression-based patient similarity network
-
-Configuration files under *lib* folder
-- `function.py`:
-- `module.py`:
+  - `edges_clinical.csv`: Clinical-based patient similarity network 
+  - `edges_cna.csv`: Copy number aberration-based patient similarity network
+  - `edges_exp.csv`: Gene expression-based patient similarity network
 
 ### Output files:
-Files under the *SUPREME_sample_data_results* folder
+Files under the *SUPREME_sample_data_results* folder:
 - `Emb_clinical.csv`: Clinical-based patient embedding
 - `Emb_cna.csv`: Copy number aberration-based patient embedding
 - `Emb_exp.csv`: Gene expression-based patient embedding
-- `SUPREME_results.xlsx`: Evaluation results for each embedding combination
+- `SUPREME_results.xlsx`: Evaluation results for each embedding combination. It contains selected hyperparameters and evaluation metrics (accuracy, weighted F1, and macro F1 scores for both the training and testing data) for each embedding combination.
 ---
 
 ## How to customize SUPREME?
+
+Files under *lib* folder:
+- `function.py`: Includes functions.
+- `module.py`: Graph Convolutional Neural Network-related module.
 
 ### User Options
 
