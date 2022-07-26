@@ -262,6 +262,7 @@ for n in range(len(node_networks)):
     emb_file = save_path + 'Emb_' +  netw_base + '.pkl'
     with open(emb_file, 'wb') as f:
         pickle.dump(selected_emb, f)
+        pd.DataFrame(selected_emb).to_csv(emb_file[:-4] + '.csv')
     
     print('Embedding for ' + netw_base + ' is generated with lr ' + str(best_emb_lr) + ' and hs ' + str(best_emb_hs) + '.')
 
