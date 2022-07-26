@@ -1,7 +1,6 @@
 # Options
 addRawFeat = True
 base_path = 'SUPREME/'
-dataset_name = 'sample_data'
 feature_networks_integration = ['clinical', 'cna', 'exp']
 node_networks = ['clinical', 'cna', 'exp']
 int_method = 'MLP' # 'MLP' or 'XGBoost' or 'RF' or 'SVM'
@@ -29,7 +28,10 @@ This framework is model-agnostic and could be applied to any classification prob
 In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks
 constructed based on multiple biological datasets from breast tumor samples.''')
 parser.add_argument('-csv', "--convert_csv", help="Converts csv files in the input directory to pkl files.", action="store_true")
+parser.add_argument('-data', "--data_location", nargs = 1, default = 'sample_data')
+
 args = parser.parse_args()
+dataset_name = args.data_location
 
 if args.convert_csv:
     path = "data/" + dataset_name
