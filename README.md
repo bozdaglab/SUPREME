@@ -27,13 +27,13 @@ Example runs:
 
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
-- `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). first column is label starting from 0 till {number of subtype}-1. This file has headers, so there are {number of sample}+1 lines. 
+- `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). First column is label starting from 0 till {number of subtype}-1. First row contains column name.
 - Input features: *i*th row has the feature values of sample with index *i*. (Still, we have column names and row names, even not considered.)
   - `clinical.csv`: 257 Samples (row) x 10 normalized clinical features (column)
   - `cna.csv`: 257 Samples (row) x 250 normalized copy number aberration features (column)
   - `exp.csv`: 257 Samples (row) x 250 normalized gene expression features (column)
 
-- Input networks: First column is unnecessary, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
+- Input networks: First column is rownames, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
   - `edges_clinical.csv`: Clinical-based patient similarity network 
   - `edges_cna.csv`: Copy number aberration-based patient similarity network
   - `edges_exp.csv`: Gene expression-based patient similarity network
