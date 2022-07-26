@@ -1,15 +1,14 @@
 # SUPREME: A cancer subtype prediction methodology integrating multiomics data using Graph Convolutional Neural Network
 
+ <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png" width="800" height="450" />
+ <!-- ![SUPREME pipeline]  -->
+ 
 SUPREME (a cancer `SU`btype `PRE`diction `ME`thodology)
 
 An integrative node classification framework, called SUPREME (a **su**btype **pre**diction **me**thodology), that utilizes graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features. This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks. In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks constructed based on multiple biological datasets from breast tumor samples.
 
 First, SUPREME generates network-specific patient embeddings from each datatype separately. Then using those embedding, it does cancer subtype prediction through all the combinations of embeddings, and report the evaluation results.
 
-
- <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png" width="800" height="450" />
- <!-- ![SUPREME pipeline]  -->
- 
 ---
 
 ## How to run SUPREME?
