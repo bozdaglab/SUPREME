@@ -13,7 +13,7 @@ First, SUPREME generates network-specific patient embeddings from each datatype 
 
 ## How to run SUPREME?
 
-Run `SUPREME.py` after generating the proper input data.
+Use `SUPREME.py` to run SUPREME.
 - If you use `.pkl` files as input files, you can run SUPREME from the command line: `python SUPREME.py`.
 - If you use `.csv` files as input files, you **should** run SUPREME from the command line with the parameter `-csv`: `python SUPREME.py -csv`. After using this command, `.pkl` files will be automatically generated for each of the input files.
 
