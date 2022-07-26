@@ -22,6 +22,36 @@ hid_sizes = [16, 32, 64, 128, 256, 512]
 
 random_state = 404
 
+# Parser
+parser = argparse.ArgumentParser(description='''An integrative node classification framework, called SUPREME 
+(a subtype prediction methodology), that utilizes graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features. 
+This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks.
+In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks
+constructed based on multiple biological datasets from breast tumor samples.''')
+parser.add_argument('-csv', "--convert_csv", help="Converts csv files in the input directory to pkl files.", action="store_true")
+args = parser.parse_args()
+
+if args.convert_csv:
+    path = "data/" + dataset_name
+    filelist = []
+    
+    for root, dirs, files in os.walk(path):
+        
+        for file in files:
+            filelist.append(os.path.join(root,file))
+    
+    for name in filelist:
+        if (name[-3:] == 'csv'):
+            if 'mask_values.csv' in name:
+                pass
+            elif 'labels.csv' in name:
+                labels = torch.flatten(torch.tensor(np.array(pd.read_csv(name))))
+                with open(name[:-3] + 'pkl', 'wb') as f:
+                    pickle.dump(labels, f)
+            else:
+                df = pd.read_csv(name, index_col=0)
+                df.to_pickle(name[:-3] + "pkl")
+
 # SUPREME run
 print('SUPREME is setting up!')
 from lib import module, function
