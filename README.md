@@ -6,6 +6,12 @@ An integrative node classification framework, called SUPREME (a **su**btype **pr
 
 First, SUPREME generates network-specific patient embeddings from each datatype separately. Then using those embedding, it does cancer subtype prediction through all the combinations of embeddings, and report the evaluation results.
 
+https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png
+
+ <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png" width="550" height="450" />
+
+ <!-- ![SUPREME pipeline]  -->
+ 
 ---
 
 ## How to run SUPREME?
