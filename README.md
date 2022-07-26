@@ -14,8 +14,8 @@ First, SUPREME generates network-specific patient embeddings from each datatype 
 ## How to run SUPREME?
 
 Use `SUPREME.py` to run SUPREME.
-- If you use `.pkl` files as input files, you can run SUPREME from the command line: `python SUPREME.py`.
-- If you use `.csv` files as input files, you **should** run SUPREME from the command line with the parameter `-csv`: `python SUPREME.py -csv`. After using this command, `.pkl` files will be automatically generated for each of the input files.
+- If you use `.pkl` files as input: `python SUPREME.py`.
+- If you use `.csv` files as input: `python SUPREME.py -csv`. (`.pkl` files will be automatically generated and saved for each of the input datatypes given as `node_networks`.
 
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
