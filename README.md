@@ -8,7 +8,7 @@ First, SUPREME generates network-specific patient embeddings from each datatype 
 
 https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png
 
- <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png" width="550" height="450" />
+ <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png" width="600" height="450" />
 
  <!-- ![SUPREME pipeline]  -->
  
