@@ -69,40 +69,26 @@ dataset_name = args.data_location
 
 if args.convert_csv:
     path = "data/" + dataset_name
-    allfiles = []
-    
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            allfiles.append(os.path.join(root,file))
-
-
-    filelist = []
     required_files = ['\\' + netw  + '.' for netw in node_networks] + ['\\labels.'] + ['\\edges_' + netw + '.' for netw in node_networks]
-    for afile in allfiles:
-        for req in required_files:
-            if (req in afile) or ('\\mask_values.' in afile):
-                if (afile[-3:] == 'csv'):
-                    filelist.append(afile)
-    for name in filelist:        
-        if 'mask_values.csv' in name:
-            padded_mask = [np.array(n).astype(np.int32)[0] for n in np.matrix(pd.read_csv(name).T)]
-            na_values_bools = [str(b) != '-2147483648' for b in padded_mask[1]]
-            padded_mask[1] = padded_mask[1][na_values_bools]
-            with open(name[:-3] + 'pkl', 'wb') as f:
-                pickle.dump(padded_mask, f)
-        elif 'labels.csv' in name:
-            labels = torch.flatten(torch.tensor(np.array(pd.read_csv(name))))
-            with open(name[:-3] + 'pkl', 'wb') as f:
-                pickle.dump(labels, f)
-        else:
-            df = pd.read_csv(name, index_col=0)
-            df.to_pickle(name[:-3] + "pkl")
-    
+    required_files = [path + req + 'csv' for req in required_files]
     for req in required_files:
-        hits = [req in name for name in filelist]
-        found = functools.reduce(lambda a, b: a or b, hits)
-        if not found:
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), req[1:] + '.csv')
+        if not os.path.exists(req):
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), req)
+        else:
+            print(req)
+            if 'labels.csv' in req:
+                labels = torch.flatten(torch.tensor(np.array(pd.read_csv(req))))
+                with open(req[:-3] + 'pkl', 'wb') as f:
+                    pickle.dump(labels, f)   
+            else:
+                df = pd.read_csv(req, index_col=0)
+                df.to_pickle(req[:-3] + "pkl")
+    if os.path.exists(path + '\\mask_values.csv'):
+        padded_mask = [np.array(n).astype(np.int32)[0] for n in np.matrix(pd.read_csv(path + '\\mask_values.csv').T)]
+        na_values_bools = [str(b) != '-2147483648' for b in padded_mask[1]]
+        padded_mask[1] = padded_mask[1][na_values_bools]
+        with open(path + '\\mask_values.pkl', 'wb') as f:
+            pickle.dump(padded_mask, f)
 
 
 
