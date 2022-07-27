@@ -1,6 +1,6 @@
 # Options
 addRawFeat = True
-base_path = ''
+base_path = 'SUPREME/'
 feature_networks_integration = ['clinical', 'cna', 'exp']
 node_networks = ['clinical', 'cna', 'exp']
 int_method = 'MLP' # 'MLP' or 'XGBoost' or 'RF' or 'SVM'
