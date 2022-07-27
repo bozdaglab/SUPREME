@@ -21,39 +21,6 @@ hid_sizes = [16, 32, 64, 128, 256, 512]
 
 random_state = 404
 
-# Parser
-parser = argparse.ArgumentParser(description='''An integrative node classification framework, called SUPREME 
-(a subtype prediction methodology), that utilizes graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features. 
-This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks.
-In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks
-constructed based on multiple biological datasets from breast tumor samples.''')
-parser.add_argument('-csv', "--convert_csv", help="Converts csv files in the input directory to pkl files.", action="store_true")
-parser.add_argument('-data', "--data_location", nargs = 1, default = 'sample_data')
-
-args = parser.parse_args()
-dataset_name = args.data_location
-
-if args.convert_csv:
-    path = "data/" + dataset_name
-    filelist = []
-    
-    for root, dirs, files in os.walk(path):
-        
-        for file in files:
-            filelist.append(os.path.join(root,file))
-    
-    for name in filelist:
-        if (name[-3:] == 'csv'):
-            if 'mask_values.csv' in name:
-                pass
-            elif 'labels.csv' in name:
-                labels = torch.flatten(torch.tensor(np.array(pd.read_csv(name))))
-                with open(name[:-3] + 'pkl', 'wb') as f:
-                    pickle.dump(labels, f)
-            else:
-                df = pd.read_csv(name, index_col=0)
-                df.to_pickle(name[:-3] + "pkl")
-
 # SUPREME run
 print('SUPREME is setting up!')
 from lib import module, function
@@ -71,6 +38,11 @@ import numpy as np
 from torch_geometric.data import Data
 import os
 import torch
+import argparse
+import functools, errno
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 if ((True in feature_selection_per_network) or (optional_feat_selection == True)):
     import rpy2
@@ -83,6 +55,57 @@ if ((True in feature_selection_per_network) or (optional_feat_selection == True)
     dplyr = importr('dplyr')
     import re
 
+# Parser
+parser = argparse.ArgumentParser(description='''An integrative node classification framework, called SUPREME 
+(a subtype prediction methodology), that utilizes graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features. 
+This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks.
+In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks
+constructed based on multiple biological datasets from breast tumor samples.''')
+parser.add_argument('-csv', "--convert_csv", help="Converts csv files in the input directory to pkl files.", action="store_true")
+parser.add_argument('-data', "--data_location", nargs = 1, default = 'sample_data')
+
+args = parser.parse_args()
+dataset_name = args.data_location
+
+if args.convert_csv:
+    path = "data/" + dataset_name
+    allfiles = []
+    
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            allfiles.append(os.path.join(root,file))
+
+
+    filelist = []
+    required_files = ['\\' + netw  + '.' for netw in node_networks] + ['\\labels.'] + ['\\edges_' + netw + '.' for netw in node_networks]
+    for afile in allfiles:
+        for req in required_files:
+            if (req in afile) or ('\\mask_values.' in afile):
+                if (afile[-3:] == 'csv'):
+                    filelist.append(afile)
+    for name in filelist:        
+        if 'mask_values.csv' in name:
+            padded_mask = [np.array(n).astype(np.int32)[0] for n in np.matrix(pd.read_csv(name).T)]
+            na_values_bools = [str(b) != '-2147483648' for b in padded_mask[1]]
+            padded_mask[1] = padded_mask[1][na_values_bools]
+            with open(name[:-3] + 'pkl', 'wb') as f:
+                pickle.dump(padded_mask, f)
+        elif 'labels.csv' in name:
+            labels = torch.flatten(torch.tensor(np.array(pd.read_csv(name))))
+            with open(name[:-3] + 'pkl', 'wb') as f:
+                pickle.dump(labels, f)
+        else:
+            df = pd.read_csv(name, index_col=0)
+            df.to_pickle(name[:-3] + "pkl")
+    
+    for req in required_files:
+        hits = [req in name for name in filelist]
+        found = functools.reduce(lambda a, b: a or b, hits)
+        if not found:
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), req[1:] + '.csv')
+
+
+
 enable_CUDA = False
 gpu_id = 0
 
@@ -93,9 +116,6 @@ elif (gpu_id != 0 and torch.cuda.is_available and enable_CUDA):
 else:
     device = torch.device('cpu')
 
-import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
-warnings.filterwarnings("ignore", category=UserWarning)
 
 def train():
     if enable_CUDA and torch.cuda.is_available():
