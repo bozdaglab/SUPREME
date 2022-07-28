@@ -27,6 +27,7 @@ Example runs:
 - `python SUPREME.py -csv -data user_defined_data`:  runs SUPREME using csv data files under 'data/user_defined_data' folder
 - `python SUPREME.py -gpu`:  runs SUPREME using pkl data files under 'data/sample_data' folder with GPU support
 
+Sample console output:
 ``` > python SUPREME.py -csv
 SUPREME is setting up!
 SUPREME has 10 features for clinical.
