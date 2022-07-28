@@ -79,7 +79,7 @@ Files under *lib* folder:
 - `function.py`: Includes functions.
 - `module.py`: Graph Convolutional Neural Network-related module.
 
-SUPREME Flowchart
+SUPREME Flowchart:
  <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/SUPREME_Flowchart.png"/>
  <!-- ![SUPREME Flowchart]  -->
  
