@@ -80,7 +80,7 @@ Files under *lib* folder:
 - `module.py`: Graph Convolutional Neural Network-related module.
 
 SUPREME Flowchart
- <img src="[https://ziynetnesibe.com/wp-content/uploads/2022/07/SUPREME_Flowchart-1024x264.png](https://ziynetnesibe.com/wp-content/uploads/2022/07/SUPREME_Flowchart-1024x264.png)" width="1024" height="264" />
+ <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/SUPREME_Flowchart-1024x264.png" width="1024" height="264" />
  <!-- ![SUPREME Flowchart]  -->
  
 ### User Options
