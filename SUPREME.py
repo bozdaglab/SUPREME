@@ -4,7 +4,7 @@ base_path = ''
 feature_networks_integration = ['clinical', 'cna', 'exp']
 node_networks = ['clinical', 'cna', 'exp']
 int_method = 'MLP' # 'MLP' or 'XGBoost' or 'RF' or 'SVM'
-xtimes = 50 
+xtimes = 5 
 xtimes2 = 10 
 
 feature_selection_per_network = [False, False, False]
@@ -71,18 +71,20 @@ if args.convert_csv:
     path = "data/" + dataset_name
     required_files = ['\\' + netw  + '.' for netw in node_networks] + ['\\labels.'] + ['\\edges_' + netw + '.' for netw in node_networks]
     required_files = [path + req + 'csv' for req in required_files]
+    
     for req in required_files:
         if not os.path.exists(req):
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), req)
+    
+    for req in required_files:
+        if 'labels.csv' in req:
+            labels = torch.flatten(torch.tensor(np.array(pd.read_csv(req))))
+            with open(req[:-3] + 'pkl', 'wb') as f:
+                pickle.dump(labels, f)   
         else:
-            print(req)
-            if 'labels.csv' in req:
-                labels = torch.flatten(torch.tensor(np.array(pd.read_csv(req))))
-                with open(req[:-3] + 'pkl', 'wb') as f:
-                    pickle.dump(labels, f)   
-            else:
-                df = pd.read_csv(req, index_col=0)
-                df.to_pickle(req[:-3] + "pkl")
+            df = pd.read_csv(req, index_col=0)
+            df.to_pickle(req[:-3] + "pkl")
+    
     if os.path.exists(path + '\\mask_values.csv'):
         padded_mask = [np.array(n).astype(np.int32)[0] for n in np.matrix(pd.read_csv(path + '\\mask_values.csv').T)]
         na_values_bools = [str(b) != '-2147483648' for b in padded_mask[1]]
@@ -513,7 +515,7 @@ for trials in range(len(trial_combs)):
          tr_result_acc, tr_result_wf1, tr_result_mf1, result_acc, result_wf1, result_mf1]
     df = df.append(pd.Series(x, index=df.columns), ignore_index=True)
     
-    print('Combination ' + str(trials) + ' >  selected parameters = ' + str(search.best_params_) + 
+    print('Combination ' + str(trials) + ' ' + str(node_networks2) + ' >  selected parameters = ' + str(search.best_params_) + 
       ', train accuracy = ' + str(tr_result_acc) + ', train weighted-f1 = ' + str(tr_result_wf1) +
       ', train macro-f1 = ' +str(tr_result_mf1) + ', test accuracy = ' + str(result_acc) + 
       ', test weighted-f1 = ' + str(result_wf1) +', test macro-f1 = ' +str(result_mf1))
