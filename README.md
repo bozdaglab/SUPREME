@@ -27,6 +27,30 @@ Example runs:
 - `python SUPREME.py -csv -data user_defined_data`:  runs SUPREME using csv data files under 'data/user_defined_data' folder
 - `python SUPREME.py -gpu`:  runs SUPREME using pkl data files under 'data/sample_data' folder with GPU support
 
+``` > python SUPREME.py -csv
+SUPREME is setting up!
+SUPREME has 10 features for clinical.
+SUPREME has 250 features for cna.
+SUPREME has 250 features for exp.
+SUPREME is generating clinical embedding..
+Embedding for clinical is generated with lr 0.001 and hs 512.
+SUPREME is generating cna embedding..
+Embedding for cna is generated with lr 0.001 and hs 256.
+SUPREME is generating exp embedding..
+Embedding for exp is generated with lr 0.001 and hs 128.
+SUPREME is integrating embeddings with MLP..
+Combination 0 ['clinical'] >  selected parameters = {'n_iter_no_change': 10, 'max_iter': 500, 'learning_rate_init': 0.01, 'hidden_layer_sizes': (32, 32)}, train accuracy = 0.899+-0.067, train weighted-f1 = 0.889+-0.072, train macro-f1 = 0.845+-0.136, test accuracy = 0.815+-0.029, test weighted-f1 = 0.782+-0.034, test macro-f1 = 0.646+-0.08
+Combination 1 ['cna'] >  selected parameters = {'n_iter_no_change': 80, 'max_iter': 2000, 'learning_rate_init': 0.1, 'hidden_layer_sizes': (32,)}, train accuracy = 0.935+-0.056, train weighted-f1 = 0.936+-0.062, train macro-f1 = 0.899+-0.115, test accuracy = 0.838+-0.04, test weighted-f1 = 0.839+-0.058, test macro-f1 = 0.734+-0.121
+Combination 2 ['exp'] >  selected parameters = {'n_iter_no_change': 50, 'max_iter': 500, 'learning_rate_init': 0.01, 'hidden_layer_sizes': (128,)}, train accuracy = 0.972+-0.057, train weighted-f1 = 0.972+-0.062, train macro-f1 = 0.962+-0.11, test accuracy = 0.846+-0.042, test weighted-f1 = 0.841+-0.048, test macro-f1 = 0.777+-0.083
+Combination 3 ['clinical', 'cna'] >  selected parameters = {'n_iter_no_change': 90, 'max_iter': 2000, 'learning_rate_init': 0.01, 'hidden_layer_sizes': (128,)}, train accuracy = 0.938+-0.048, train weighted-f1 = 0.939+-0.048, train macro-f1 = 0.919+-0.08, test accuracy = 0.838+-0.034, test weighted-f1 = 0.833+-0.039, test macro-f1 = 0.731+-0.105
+Combination 4 ['clinical', 'exp'] >  selected parameters = {'n_iter_no_change': 70, 'max_iter': 250, 'learning_rate_init': 0.1, 'hidden_layer_sizes': (128,)}, train accuracy = 0.914+-0.051, train weighted-f1 = 0.915+-0.054, train macro-f1 = 0.847+-0.084, test accuracy = 0.816+-0.038, test weighted-f1 = 0.795+-0.037, test macro-f1 = 0.685+-0.072
+Combination 5 ['cna', 'exp'] >  selected parameters = {'n_iter_no_change': 60, 'max_iter': 250, 'learning_rate_init': 0.01, 'hidden_layer_sizes': (512,)}, train accuracy = 0.953+-0.032, train weighted-f1 = 0.954+-0.032, train macro-f1 = 0.941+-0.04, test accuracy = 0.831+-0.018, test weighted-f1 = 0.824+-0.017, test macro-f1 = 0.748+-0.038
+Combination 6 ['clinical', 'cna', 'exp'] >  selected parameters = {'n_iter_no_change': 80, 'max_iter': 250, 'learning_rate_init': 0.001, 'hidden_layer_sizes': (64,)}, train accuracy = 0.972+-0.069, train weighted-f1 = 0.97+-0.072, train macro-f1 = 0.944+-0.123, test accuracy = 0.831+-0.038, test weighted-f1 = 0.814+-0.051, test macro-f1 = 0.652+-0.117
+It took 1097.5 seconds for all runs.
+SUPREME is done.
+Results are available at SUPREME_sample_data_results/SUPREME_results.xlsx
+```
+
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
 - `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). First column is label starting from 0 till {number of subtype}-1. First row contains column name.
