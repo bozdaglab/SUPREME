@@ -71,15 +71,15 @@ Files under the *SUPREME_sample_data_results* folder:
 - `Emb_cna.csv`: Copy number aberration-based patient embedding
 - `Emb_exp.csv`: Gene expression-based patient embedding
 - `SUPREME_results.xlsx`: Evaluation results for each embedding combination. It contains selected hyperparameters and evaluation metrics (accuracy, weighted F1, and macro F1 scores for both the training and testing data) for each embedding combination.
+
+### Files under *lib* folder:
+- `function.py`: Includes functions.
+- `module.py`: Graph Convolutional Neural Network-related module.
 ---
 
 ## How to customize SUPREME?
 
-Files under *lib* folder:
-- `function.py`: Includes functions.
-- `module.py`: Graph Convolutional Neural Network-related module.
-
-SUPREME Flowchart:
+### SUPREME Flowchart
  <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/SUPREME_Flowchart.png"/>
  <!-- ![SUPREME Flowchart]  -->
  
@@ -130,6 +130,3 @@ SUPREME Flowchart:
 - `{datatype name}.pkl` will have the values of the ordered samples in each datatype (feature size could be datatype specific). (*i*th row has the feature values of sample with index *i*)  
 - `edges_{datatype name}.pkl` will have the matching sample indexes to represent interactions.  
 - `train_valid_idx` and `test_idx` will contain the matching sample indexes.
-
-
- 
