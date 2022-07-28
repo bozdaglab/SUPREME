@@ -4,7 +4,7 @@ base_path = ''
 feature_networks_integration = ['clinical', 'cna', 'exp']
 node_networks = ['clinical', 'cna', 'exp']
 int_method = 'MLP' # 'MLP' or 'XGBoost' or 'RF' or 'SVM'
-xtimes = 5 
+xtimes = 50 
 xtimes2 = 10 
 
 feature_selection_per_network = [False, False, False]
@@ -63,9 +63,13 @@ In our work, SUPREME was applied specifically to the breast cancer subtype predi
 constructed based on multiple biological datasets from breast tumor samples.''')
 parser.add_argument('-csv', "--convert_csv", help="Converts csv files in the input directory to pkl files.", action="store_true")
 parser.add_argument('-data', "--data_location", nargs = 1, default = 'sample_data')
+parser.add_argument('-gpu', "--gpu_support", help="Enables GPU support.", action="store_true", default = False)
+parser.add_argument('-gpu_id', "--gpu_id_to_use", nargs = 1, default = 0)
 
 args = parser.parse_args()
 dataset_name = args.data_location
+enable_CUDA = args.gpu_support
+gpu_id = args.gpu_id_to_use
 
 if args.convert_csv:
     path = "data/" + dataset_name
@@ -93,9 +97,6 @@ if args.convert_csv:
             pickle.dump(padded_mask, f)
 
 
-
-enable_CUDA = False
-gpu_id = 0
 
 if  enable_CUDA and torch.cuda.is_available() and gpu_id == 0:
     device = torch.device('cuda')

@@ -1,4 +1,4 @@
-## SUPREME: A cancer subtype prediction methodology integrating multiomics data using Graph Convolutional Neural Network
+# SUPREME: A cancer subtype prediction methodology integrating multiomics data using Graph Convolutional Neural Network
 
  <img src="https://ziynetnesibe.com/wp-content/uploads/2022/07/Figure1-2.png" width="800" height="450" />
  <!-- ![SUPREME pipeline]  -->
@@ -17,13 +17,15 @@ Use `SUPREME.py` to run SUPREME.
 Parameters:
 `-csv` : It will automatically convert '.csv' files to '.pkl' files and save them for each input datatype given as `node_networks`.
 `-data`: It specifies the data location to use under the 'data' folder (default is 'sample data').
+`-gpu`: It enables GPU support (default is False).
+`-gpu_id`: It specifies the index of GPU device for users with multiple GPUS. (default is 0).
 
 Example runs:
 - `python SUPREME.py`: runs SUPREME using pkl data files under 'data/sample_data' folder
 - `python SUPREME.py -csv`:  runs SUPREME using csv data files under 'data/sample_data' folder
 - `python SUPREME.py -data user_defined_data`:  runs SUPREME using pkl data files under 'data/user_defined_data' folder
 - `python SUPREME.py -csv -data user_defined_data`:  runs SUPREME using csv data files under 'data/user_defined_data' folder
-
+- `python SUPREME.py -gpu`:  runs SUPREME using pkl data files under 'data/sample_data' folder with GPU support
 
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
@@ -88,7 +90,7 @@ Files under *lib* folder:
 - In addition, the *data folder* will contain two '.pkl files per datatype. 
   - `{datatype name}.pkl`: *<class 'pandas.core.frame.DataFrame'>* with the shape of *({sample size}, {selected feature size for that datatype})*
   - `edges_{datatype name}.pkl`: *<class 'pandas.core.frame.DataFrame'>* with the shape of *({Number of patient-patient pair interaction for this datatype}, 3)*. First and second columns will contain patient indexes for the patient-patient pairs having interactions and third column will be the weight of the interaction.
-- The *data folder* might have a file named `mask_values.pkl` (<class 'list'>) if the user wants to specify test samples. If `mask_values.pkl` does not exist in *data folder*, SUPREME will generate train and test splits. If added, `mask_values.pkl` needs to have two variables in it:
+- The *data folder* might have a file named `mask_values.pkl` *(<class 'list'>)* if the user wants to specify test samples. If `mask_values.pkl` does not exist in *data folder*, SUPREME will generate train and test splits. If added, `mask_values.pkl` needs to have two variables in it:
   - `train_valid_idx`: *<class 'numpy.ndarray'>* with the shape of *({Number of samples for training and validation,)* containing the sample indexes for training and validation.
   - `test_idx`: *<class 'numpy.ndarray'>* with the shape of *({Number of samples for test,)* containing the sample indexes for test.
  
