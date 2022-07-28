@@ -79,6 +79,10 @@ Files under *lib* folder:
 - `function.py`: Includes functions.
 - `module.py`: Graph Convolutional Neural Network-related module.
 
+SUPREME Flowchart
+ <img src="[https://ziynetnesibe.com/wp-content/uploads/2022/07/SUPREME_Flowchart-1024x264.png](https://ziynetnesibe.com/wp-content/uploads/2022/07/SUPREME_Flowchart-1024x264.png)" width="800" height="450" />
+ <!-- ![SUPREME Flowchart]  -->
+ 
 ### User Options
 
 - Adjust the following variables (lines 2-7):
@@ -126,3 +130,6 @@ Files under *lib* folder:
 - `{datatype name}.pkl` will have the values of the ordered samples in each datatype (feature size could be datatype specific). (*i*th row has the feature values of sample with index *i*)  
 - `edges_{datatype name}.pkl` will have the matching sample indexes to represent interactions.  
 - `train_valid_idx` and `test_idx` will contain the matching sample indexes.
+
+
+ 
