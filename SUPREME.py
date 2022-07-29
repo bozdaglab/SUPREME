@@ -71,6 +71,10 @@ dataset_name = args.data_location[0]
 enable_CUDA = args.gpu_support
 gpu_id = args.gpu_id_to_use[0]
 
+path = "data/" + dataset_name
+if not os.path.exists(path):
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
+        
 if args.convert_csv:
     path = "data/" + dataset_name
     required_files = ['\\' + netw  + '.' for netw in node_networks] + ['\\labels.'] + ['\\edges_' + netw + '.' for netw in node_networks]
