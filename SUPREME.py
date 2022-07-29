@@ -39,7 +39,7 @@ from torch_geometric.data import Data
 import os
 import torch
 import argparse
-import functools, errno
+import errno
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -62,14 +62,14 @@ This framework is model-agnostic and could be applied to any classification prob
 In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks
 constructed based on multiple biological datasets from breast tumor samples.''')
 parser.add_argument('-csv', "--convert_csv", help="Converts csv files in the input directory to pkl files.", action="store_true")
-parser.add_argument('-data', "--data_location", nargs = 1, default = 'sample_data')
+parser.add_argument('-data', "--data_location", nargs = 1, default = ['sample_data'])
 parser.add_argument('-gpu', "--gpu_support", help="Enables GPU support.", action="store_true", default = False)
-parser.add_argument('-gpu_id', "--gpu_id_to_use", nargs = 1, default = 0)
+parser.add_argument('-gpu_id', "--gpu_id_to_use", nargs = 1, default = [0])
 
 args = parser.parse_args()
-dataset_name = args.data_location
+dataset_name = args.data_location[0]
 enable_CUDA = args.gpu_support
-gpu_id = args.gpu_id_to_use
+gpu_id = args.gpu_id_to_use[0]
 
 if args.convert_csv:
     path = "data/" + dataset_name
@@ -100,8 +100,8 @@ if args.convert_csv:
 
 if  enable_CUDA and torch.cuda.is_available() and gpu_id == 0:
     device = torch.device('cuda')
-elif (gpu_id != 0 and torch.cuda.is_available and enable_CUDA):
-    device = torch.cuda.device('cuda:' + str(gpu_id))
+elif (gpu_id != 0 and torch.cuda.is_available() and enable_CUDA):
+    device = torch.device('cuda:' + str(gpu_id))
 else:
     device = torch.device('cpu')
 
