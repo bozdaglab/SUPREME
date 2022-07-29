@@ -76,7 +76,6 @@ if not os.path.exists(path):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
         
 if args.convert_csv:
-    path = "data/" + dataset_name
     required_files = ['\\' + netw  + '.' for netw in node_networks] + ['\\labels.'] + ['\\edges_' + netw + '.' for netw in node_networks]
     required_files = [path + req + 'csv' for req in required_files]
     
