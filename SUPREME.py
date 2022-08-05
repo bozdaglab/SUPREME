@@ -409,11 +409,11 @@ for trials in range(len(trial_combs)):
                               learning_rate_init = search.best_params_['learning_rate_init'])
         
     elif int_method == 'XGBoost':
-        params = {'reg_alpha':range(0,10,1), 'reg_lambda':range(1,10,1) ,'max_depth': range(0,6,1), 
+        params = {'reg_alpha':range(0,10,1), 'reg_lambda':range(1,10,1) ,'max_depth': range(1,6,1), 
                   'min_child_weight': range(1,10,1), 'gamma': range(0,6,1),
                   'learning_rate':[0, 1e-5, 0.0001, 0.001, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 1],
                   'max_delta_step': range(0,10,1), 'colsample_bytree': [0.5, 0.7, 1.0],
-                  'colsample_bylevel': [0.5, 0.7, 1.0], 'colsample_bynode': [0.5, 0.7, 1.0], 'max_depth': [6]}
+                  'colsample_bylevel': [0.5, 0.7, 1.0], 'colsample_bynode': [0.5, 0.7, 1.0]}
         fit_params = {'early_stopping_rounds': 10,
                      'eval_metric': 'mlogloss',
                      'eval_set': [(X_train, y_train)]}
