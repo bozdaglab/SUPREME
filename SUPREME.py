@@ -61,64 +61,22 @@ parser = argparse.ArgumentParser(description='''An integrative node classificati
 This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks.
 In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks
 constructed based on multiple biological datasets from breast tumor samples.''')
-parser.add_argument('-csv', "--convert_csv", help="Converts csv files in the input directory to pkl files.", action="store_true")
 parser.add_argument('-data', "--data_location", nargs = 1, default = ['sample_data'])
-parser.add_argument('-gpu', "--gpu_support", help="Enables GPU support.", action="store_true", default = False)
-parser.add_argument('-gpu_id', "--gpu_id_to_use", nargs = 1, default = [0])
 
 args = parser.parse_args()
 dataset_name = args.data_location[0]
-enable_CUDA = args.gpu_support
-gpu_id = args.gpu_id_to_use[0]
 
 path = base_path + "data/" + dataset_name
 if not os.path.exists(path):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
         
-if args.convert_csv:
-    required_files = ['\\' + netw  + '.' for netw in node_networks] + ['\\labels.'] + ['\\edges_' + netw + '.' for netw in node_networks]
-    required_files = [path + req + 'csv' for req in required_files]
-    
-    for req in required_files:
-        if not os.path.exists(req):
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), req)
-    
-    for req in required_files:
-        if 'labels.csv' in req:
-            labels = torch.flatten(torch.tensor(np.array(pd.read_csv(req))))
-            with open(req[:-3] + 'pkl', 'wb') as f:
-                pickle.dump(labels, f)   
-        else:
-            df = pd.read_csv(req, index_col=0)
-            df.to_pickle(req[:-3] + "pkl")
-    
-    if os.path.exists(path + '\\mask_values.csv'):
-        padded_mask = [np.array(n).astype(np.int32)[0] for n in np.matrix(pd.read_csv(path + '\\mask_values.csv').T)]
-        na_values_bools = [str(b) != '-2147483648' for b in padded_mask[1]]
-        padded_mask[1] = padded_mask[1][na_values_bools]
-        with open(path + '\\mask_values.pkl', 'wb') as f:
-            pickle.dump(padded_mask, f)
-
-
-
-if  enable_CUDA and torch.cuda.is_available() and gpu_id == 0:
-    device = torch.device('cuda')
-elif (gpu_id != 0 and torch.cuda.is_available() and enable_CUDA):
-    device = torch.device('cuda:' + str(gpu_id))
-else:
-    device = torch.device('cpu')
+device = torch.device('cpu')
 
 
 def train():
-    if enable_CUDA and torch.cuda.is_available():
-      model.cuda().train()
-    else:
-      model.train()
+    model.train()
     optimizer.zero_grad()
-    if enable_CUDA and torch.cuda.is_available():
-      out, emb1 = model(data.cuda())
-    else:
-       out, emb1 = model(data)
+    out, emb1 = model(data)
     loss = criterion(out[data.train_mask], data.y[data.train_mask])
     loss.backward()
     optimizer.step()
@@ -382,10 +340,10 @@ for trials in range(len(trial_combs)):
     data.train_mask = torch.tensor(train_mask, device=device)
     test_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
     data.test_mask = torch.tensor(test_mask, device=device)
-    X_train = pd.DataFrame(data.x[data.train_mask].cpu().numpy())
-    X_test = pd.DataFrame(data.x[data.test_mask].cpu().numpy())
-    y_train = pd.DataFrame(data.y[data.train_mask].cpu().numpy()).values.ravel()
-    y_test = pd.DataFrame(data.y[data.test_mask].cpu().numpy()).values.ravel()
+    X_train = pd.DataFrame(data.x[data.train_mask].numpy())
+    X_test = pd.DataFrame(data.x[data.test_mask].numpy())
+    y_train = pd.DataFrame(data.y[data.train_mask].numpy()).values.ravel()
+    y_test = pd.DataFrame(data.y[data.test_mask].numpy()).values.ravel()
     
     if int_method == 'MLP':
         params = {'hidden_layer_sizes': [(16,), (32,),(64,),(128,),(256,),(512,), (32, 32), (64, 32), (128, 32), (256, 32), (512, 32)],
@@ -412,13 +370,8 @@ for trials in range(len(trial_combs)):
                      'eval_metric': 'mlogloss',
                      'eval_set': [(X_train, y_train)]}
         
-        if enable_CUDA and torch.cuda.is_available(): 
-            search = RandomizedSearchCV(estimator = XGBClassifier(use_label_encoder=False, n_estimators = 1000, 
-                                                                  fit_params = fit_params, objective="multi:softprob", eval_metric = "mlogloss", 
-                                                                  verbosity = 0, tree_method = 'gpu_hist', gpu_id=gpu_id), return_train_score = True, scoring = 'f1_macro',
-                                        param_distributions = params, cv = 4, n_iter = xtimes, verbose = 0)
-        else:          
-            search = RandomizedSearchCV(estimator = XGBClassifier(use_label_encoder=False, n_estimators = 1000, 
+              
+        search = RandomizedSearchCV(estimator = XGBClassifier(use_label_encoder=False, n_estimators = 1000, 
                                                                   fit_params = fit_params, objective="multi:softprob", eval_metric = "mlogloss", 
                                                                   verbosity = 0), return_train_score = True, scoring = 'f1_macro',
                                         param_distributions = params, cv = 4, n_iter = xtimes, verbose = 0)
@@ -481,7 +434,7 @@ for trials in range(len(trial_combs)):
         model.fit(X_train,y_train)
         predictions = model.predict(X_test)
         y_pred = [round(value) for value in predictions]
-        preds = model.predict(pd.DataFrame(data.x.cpu().numpy()))
+        preds = model.predict(pd.DataFrame(data.x.numpy()))
         av_result_acc.append(round(accuracy_score(y_test, y_pred), 3))
         av_result_wf1.append(round(f1_score(y_test, y_pred, average='weighted'), 3))
         av_result_mf1.append(round(f1_score(y_test, y_pred, average='macro'), 3))
