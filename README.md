@@ -14,21 +14,14 @@ First, SUPREME generates network-specific patient embeddings from each datatype 
 ## How to run SUPREME?
 
 Use `SUPREME.py` to run SUPREME.
-Parameters:
-`-csv` : It will automatically convert '.csv' files to '.pkl' files and save them for each input datatype given as `node_networks`.
-`-data`: It specifies the data location to use under the 'data' folder (default is 'sample data').
-`-gpu`: It enables GPU support (default is False).
-`-gpu_id`: It specifies the index of GPU device for users with multiple GPUS. (default is 0).
+Parameter: `-data`: It specifies the data location to use under the 'data' folder (default is 'sample data').
 
 Example runs:
-- `python SUPREME.py`: runs SUPREME using pkl data files under 'data/sample_data' folder
-- `python SUPREME.py -csv`:  runs SUPREME using csv data files under 'data/sample_data' folder
-- `python SUPREME.py -data user_defined_data`:  runs SUPREME using pkl data files under 'data/user_defined_data' folder
-- `python SUPREME.py -csv -data user_defined_data`:  runs SUPREME using csv data files under 'data/user_defined_data' folder
-- `python SUPREME.py -gpu`:  runs SUPREME using pkl data files under 'data/sample_data' folder with GPU support
+- `python SUPREME.py`: runs SUPREME under 'data/sample_data' folder
+- `python SUPREME.py -data user_defined_data`:  runs SUPREME under 'data/user_defined_data' folder
 
 Sample console output:
-``` > python SUPREME.py -csv
+``` > python SUPREME.py
 SUPREME is setting up!
 SUPREME is running..
 Combination 0 ['clinical'] >  selected parameters = {'n_iter_no_change': 10, 'max_iter': 500, 'learning_rate_init': 0.01, 'hidden_layer_sizes': (32, 32)}, train accuracy = 0.899+-0.067, train weighted-f1 = 0.889+-0.072, train macro-f1 = 0.845+-0.136, test accuracy = 0.815+-0.029, test weighted-f1 = 0.782+-0.034, test macro-f1 = 0.646+-0.08
@@ -45,16 +38,16 @@ Results are available at SUPREME_sample_data_results/SUPREME_results.xlsx
 
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
-- `labels.csv`: Labels of ordered samples (*i*th row has the label of sample with index *i*). First column is label starting from 0 till {number of subtype}-1. First row contains column name.
+- `labels.pkl`: Labels of ordered samples (*i*th row has the label of sample with index *i*). First column is label starting from 0 till {number of subtype}-1. First row contains column name.
 - Input features: *i*th row has the feature values of sample with index *i*. (Still, we have column names and row names, even not considered.)
-  - `clinical.csv`: 257 Samples (row) x 10 normalized clinical features (column)
-  - `cna.csv`: 257 Samples (row) x 250 normalized copy number aberration features (column)
-  - `exp.csv`: 257 Samples (row) x 250 normalized gene expression features (column)
+  - `clinical.pkl`: 257 Samples (row) x 10 normalized clinical features (column)
+  - `cna.pkl`: 257 Samples (row) x 250 normalized copy number aberration features (column)
+  - `exp.pkl`: 257 Samples (row) x 250 normalized gene expression features (column)
 
 - Input networks: First column is rownames, second and third columns will contain sample indexes for the sample-sample pairs having interactions and forth column will be the weight of the interaction.
-  - `edges_clinical.csv`: Clinical-based patient similarity network 
-  - `edges_cna.csv`: Copy number aberration-based patient similarity network
-  - `edges_exp.csv`: Gene expression-based patient similarity network
+  - `edges_clinical.pkl`: Clinical-based patient similarity network 
+  - `edges_cna.pkl`: Copy number aberration-based patient similarity network
+  - `edges_exp.pkl`: Gene expression-based patient similarity network
 
 ### Output files:
 Files under the *SUPREME_sample_data_results* folder:
@@ -97,9 +90,7 @@ Files under the *SUPREME_sample_data_results* folder:
   - `xtimes`: the number of SUPREME runs to select the best hyperparameter combination during hyperparameter tuning as part of Randomized Search (default: 50, should be more than 1.)
   - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination, used to generate the median statistics (default: 10, should be more than 1.) 
   - `boruta_runs`: the number of times Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*, or if any of the values in `feature_selection_per_network` are *True*)
-  - `enable_CUDA`: *True* or *False*: Enables CUDA if *True* (default is *False*).
-  - `gpu_id`: For users with multiple GPUs, this specifies the index of the GPU device to use (default is 0.)
-
+ 
 ---
 
 ### Data Generation for a New Dataset
