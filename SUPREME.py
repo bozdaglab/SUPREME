@@ -16,16 +16,17 @@ boruta_top_features = 50
 max_epochs = 500
 min_epochs = 200
 patience = 30
-learning_rates = [0.01, 0.001, 0.0001]
-hid_sizes = [16, 32, 64, 128, 256, 512] 
+learning_rate = 0.001
+hidden_size = 256 
 
 random_state = 404
 
 # SUPREME run
 print('SUPREME is setting up!')
-from lib import module, function
+from lib import module
 import time
-import os, pickle, pyreadr, itertools
+import os, pyreadr, itertools
+import pickle5 as pickle
 from sklearn.metrics import f1_score, accuracy_score
 import statistics
 from sklearn.svm import SVC
@@ -96,7 +97,7 @@ criterion = torch.nn.CrossEntropyLoss()
 data_path_node =  base_path + 'data/' + dataset_name +'/'
 run_name = 'SUPREME_'+  dataset_name + '_results'
 save_path = base_path + run_name + '/'
-excel_file = save_path + "SUPREME_results.xlsx"
+
 
 if not os.path.exists(base_path + run_name):
     os.makedirs(base_path + run_name + '/')
@@ -111,6 +112,7 @@ if os.path.exists(file):
         train_valid_idx, test_idx = pickle.load(f)
 else:
     train_valid_idx, test_idx= train_test_split(np.arange(len(labels)), test_size=0.20, shuffle=True, stratify=labels, random_state=random_state)
+
 
 start = time.time()
 
@@ -172,59 +174,6 @@ for n in range(len(node_networks)):
         edge_index = pickle.load(f)
     best_ValidLoss = np.Inf
 
-    for learning_rate in learning_rates:
-        for hid_size in hid_sizes:
-            av_valid_losses = list()
-
-            for ii in range(xtimes2):
-                data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values, device=device).long(),
-                            edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values, device=device).float(), y=labels) 
-                X = data.x[train_valid_idx]
-                y = data.y[train_valid_idx]
-                rskf = RepeatedStratifiedKFold(n_splits=4, n_repeats=1)
-
-                for train_part, valid_part in rskf.split(X, y):
-                    train_idx = train_valid_idx[train_part]
-                    valid_idx = train_valid_idx[valid_part]
-                    break
-
-                train_mask = np.array([i in set(train_idx) for i in range(data.x.shape[0])])
-                valid_mask = np.array([i in set(valid_idx) for i in range(data.x.shape[0])])
-                data.valid_mask = torch.tensor(valid_mask, device=device)
-                data.train_mask = torch.tensor(train_mask, device=device)
-                test_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
-                data.test_mask = torch.tensor(test_mask, device=device)
-
-                in_size = data.x.shape[1]
-                out_size = torch.unique(data.y).shape[0]
-                model = module.Net(in_size=in_size, hid_size=hid_size, out_size=out_size)
-                optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-
-                min_valid_loss = np.Inf
-                patience_count = 0
-
-                for epoch in range(max_epochs):
-                    emb = train()
-                    this_valid_loss, emb = validate()
-
-                    if this_valid_loss < min_valid_loss:
-                        min_valid_loss = this_valid_loss
-                        patience_count = 0
-                    else:
-                        patience_count += 1
-
-                    if epoch >= min_epochs and patience_count >= patience:
-                        break
-
-                av_valid_losses.append(min_valid_loss.item())
-
-            av_valid_loss = round(statistics.median(av_valid_losses), 3)
-            
-            if av_valid_loss < best_ValidLoss:
-                best_ValidLoss = av_valid_loss
-                best_emb_lr = learning_rate
-                best_emb_hs = hid_size
-                
     data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values, device=device).long(),
                 edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values, device=device).float(), y=labels) 
     X = data.x[train_valid_idx]
@@ -237,8 +186,8 @@ for n in range(len(node_networks)):
     
     in_size = data.x.shape[1]
     out_size = torch.unique(data.y).shape[0]
-    model = module.Net(in_size=in_size, hid_size=best_emb_hs, out_size=out_size)
-    optimizer = torch.optim.Adam(model.parameters(), lr=best_emb_lr)
+    model = module.Net(in_size=in_size, hid_size=hidden_size, out_size=out_size)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     min_valid_loss = np.Inf
     patience_count = 0
@@ -346,26 +295,17 @@ for trials in range(len(trial_combs)):
     y_test = pd.DataFrame(data.y[data.test_mask].numpy()).values.ravel()
     
     if int_method == 'MLP':
-        params = {'hidden_layer_sizes': [(16,), (32,),(64,),(128,),(256,),(512,), (32, 32), (64, 32), (128, 32), (256, 32), (512, 32)],
-                  'learning_rate_init': [0.1, 0.01, 0.001, 0.0001, 0.00001, 1, 2, 3],
-                  'max_iter': [250, 500, 1000, 1500, 2000],
-                  'n_iter_no_change': range(10,110,10)}
+        params = {'hidden_layer_sizes': [(16,), (32,),(64,),(128,),(256,),(512,), (32, 32), (64, 32), (128, 32), (256, 32), (512, 32)]}
         search = RandomizedSearchCV(estimator = MLPClassifier(solver = 'adam', activation = 'relu', early_stopping = True), 
                                     return_train_score = True, scoring = 'f1_macro', 
                                     param_distributions = params, cv = 4, n_iter = xtimes, verbose = 0)
         search.fit(X_train, y_train)
         model = MLPClassifier(solver = 'adam', activation = 'relu', early_stopping = True,
-                              max_iter = search.best_params_['max_iter'], 
-                              n_iter_no_change = search.best_params_['n_iter_no_change'],
-                              hidden_layer_sizes = search.best_params_['hidden_layer_sizes'],
-                              learning_rate_init = search.best_params_['learning_rate_init'])
+                              hidden_layer_sizes = search.best_params_['hidden_layer_sizes'])
         
     elif int_method == 'XGBoost':
-        params = {'reg_alpha':range(0,10,1), 'reg_lambda':range(1,10,1) ,'max_depth': range(1,6,1), 
-                  'min_child_weight': range(1,10,1), 'gamma': range(0,6,1),
-                  'learning_rate':[0, 1e-5, 0.0001, 0.001, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 1],
-                  'max_delta_step': range(0,10,1), 'colsample_bytree': [0.5, 0.7, 1.0],
-                  'colsample_bylevel': [0.5, 0.7, 1.0], 'colsample_bynode': [0.5, 0.7, 1.0]}
+        params = {'reg_alpha':range(0,6,1), 'reg_lambda':range(1,5,1),
+                  'learning_rate':[0, 0.001, 0.01, 1]}
         fit_params = {'early_stopping_rounds': 10,
                      'eval_metric': 'mlogloss',
                      'eval_set': [(X_train, y_train)]}
@@ -382,43 +322,24 @@ for trials in range(len(trial_combs)):
                               n_estimators = 1000, fit_params = fit_params,
                               reg_alpha = search.best_params_['reg_alpha'],
                               reg_lambda = search.best_params_['reg_lambda'],
-                              max_depth = search.best_params_['max_depth'],
-                              min_child_weight = search.best_params_['min_child_weight'],
-                              gamma = search.best_params_['gamma'],
-                              learning_rate = search.best_params_['learning_rate'],
-                              max_delta_step = search.best_params_['max_delta_step'],
-                              colsample_bytree = search.best_params_['colsample_bytree'],
-                              colsample_bylevel = search.best_params_['colsample_bylevel'],
-                              colsample_bynode = search.best_params_['colsample_bynode'])
+                              learning_rate = search.best_params_['learning_rate'])
                             
     elif int_method == 'RF':
         max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
         max_depth.append(None)
-        params = {'n_estimators': [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)],
-                  'max_depth': max_depth,
-                  'min_samples_split': [2, 5, 7, 10],
-                  'min_samples_leaf': [1, 2, 5, 7, 10], 
-                 'min_impurity_decrease':[0,0.5, 0.7, 1, 5, 10],
-                 'max_leaf_nodes': [None, 5, 10, 20]}
+        params = {'n_estimators': [int(x) for x in np.linspace(start = 200, stop = 2000, num = 100)]}
         search = RandomizedSearchCV(estimator = RandomForestClassifier(), return_train_score = True,
                                     scoring = 'f1_macro', param_distributions = params, cv=4,  n_iter = xtimes, verbose = 0)
         search.fit(X_train, y_train)
-        model=RandomForestClassifier(n_estimators = search.best_params_['n_estimators'],
-                                     max_depth = search.best_params_['max_depth'],
-                                     min_samples_split = search.best_params_['min_samples_split'],
-                                     min_samples_leaf = search.best_params_['min_samples_leaf'],
-                                     min_impurity_decrease = search.best_params_['min_impurity_decrease'],
-                                     max_leaf_nodes = search.best_params_['max_leaf_nodes'])
+        model=RandomForestClassifier(n_estimators = search.best_params_['n_estimators'])
 
     elif int_method == 'SVM':
         params = {'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
-                  'gamma': [1, 0.1, 0.01, 0.001, 0.0001, 'scale', 'auto'],
-                  'kernel': ['linear', 'rbf']}
+                  'gamma': [1, 0.1, 0.01, 0.001]}
         search = RandomizedSearchCV(SVC(), return_train_score = True,
                                     scoring = 'f1_macro', param_distributions = params, cv=4, n_iter = xtimes, verbose = 0)
         search.fit(X_train, y_train)
-        model=SVC(kernel=search.best_params_['kernel'],
-                  C = search.best_params_['C'],
+        model=SVC(C = search.best_params_['C'],
                   gamma = search.best_params_['gamma'])
 
  
@@ -460,29 +381,12 @@ for trials in range(len(trial_combs)):
     tr_result_wf1 = str(round(statistics.median(av_tr_result_wf1), 3)) + '+-' + str(round(statistics.stdev(av_tr_result_wf1), 3))
     tr_result_mf1 = str(round(statistics.median(av_tr_result_mf1), 3)) + '+-' + str(round(statistics.stdev(av_tr_result_mf1), 3))
     
-    
-    df = pd.DataFrame(columns=['Comb No', 'Used Embeddings', 'Added Raw Features', 'Selected Params', 'Train Acc', 'Train wF1','Train mF1', 'Test Acc', 'Test wF1','Test mF1'])
-    x = [trials, node_networks2, addFeatures, search.best_params_, 
-         tr_result_acc, tr_result_wf1, tr_result_mf1, result_acc, result_wf1, result_mf1]
-    df = df.append(pd.Series(x, index=df.columns), ignore_index=True)
-    
     print('Combination ' + str(trials) + ' ' + str(node_networks2) + ' >  selected parameters = ' + str(search.best_params_) + 
       ', train accuracy = ' + str(tr_result_acc) + ', train weighted-f1 = ' + str(tr_result_wf1) +
       ', train macro-f1 = ' +str(tr_result_mf1) + ', test accuracy = ' + str(result_acc) + 
       ', test weighted-f1 = ' + str(result_wf1) +', test macro-f1 = ' +str(result_mf1))
 
-    if trials == 0:
-        if addRawFeat == True:
-            function.append_df_to_excel(excel_file, df, sheet_name = int_method + '+Raw', index = False, header = True)
-        else:
-            function.append_df_to_excel(excel_file, df, sheet_name = int_method, index = False, header = True)
-    else:
-        if addRawFeat == True:
-            function.append_df_to_excel(excel_file, df, sheet_name = int_method + '+Raw', index = False, header = False)
-        else:
-            function.append_df_to_excel(excel_file, df, sheet_name = int_method, index = False, header = False)
 
 end = time.time()
 print('It took ' + str(round(end - start, 1)) + ' seconds for all runs.')
 print('SUPREME is done.')
-print('Results are available at ' + excel_file)
