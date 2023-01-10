@@ -111,3 +111,26 @@ Files under the *SUPREME_sample_data_results* folder:
 - `{datatype name}.pkl` will have the values of the ordered samples in each datatype (feature size could be datatype specific). (*i*th row has the feature values of sample with index *i*)  
 - `edges_{datatype name}.pkl` will have the matching sample indexes to represent interactions.  
 - `train_valid_idx` and `test_idx` will contain the matching sample indexes.
+
+
+
+Relevant package versions in the environment:
+```
+# Name                    Version                   Build  Channel
+cpuonly                   2.0                           0    pytorch
+numpy                     1.19.2           py36hadc3359_0
+pandas                    1.1.5                    pypi_0    pypi
+pickle5                   0.0.12                   pypi_0    pypi
+pip                       21.3.1                   pypi_0    pypi
+python                    3.6.13               h3758d61_0
+python-dateutil           2.8.2                    pypi_0    pypi
+pytorch                   1.10.2              py3.6_cpu_0    pytorch
+pytorch-mutex             1.0                         cpu    pytorch
+rpy2                      3.4.5                    pypi_0    pypi
+scikit-learn              0.24.2                   pypi_0    pypi
+torch-geometric           2.0.3                    pypi_0    pypi
+torch-scatter             2.0.9                    pypi_0    pypi
+torch-sparse              0.6.12                   pypi_0    pypi
+torchaudio                0.10.2                 py36_cpu  [cpuonly]  pytorch
+torchvision               0.11.3                 py36_cpu  [cpuonly]  pytorch
+```
