@@ -84,8 +84,8 @@ Files under the *SUPREME_sample_data_results* folder:
   - `max_epochs`: maximum number of epoch (default is 500.)
   - `min_epochs`: minimum number of epoch (default is 200.)
   - `patience`: patience for early stopping (default is 30.)
-  - `learning_rate`: learning rate
-  - `hidden_size`: hidden size
+  - `learning_rate`: learning rate (default is 0.001.)
+  - `hidden_size`: hidden size (default is 256.)
   - `xtimes`: the number of SUPREME runs to select the best hyperparameter combination during hyperparameter tuning as part of Randomized Search (default: 50, should be more than 1.)
   - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination, used to generate the median statistics (default: 10, should be more than 1.) 
   - `boruta_runs`: the number of times Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*, or if any of the values in `feature_selection_per_network` are *True*)
