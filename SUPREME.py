@@ -19,8 +19,6 @@ patience = 30
 learning_rate = 0.001
 hidden_size = 256 
 
-random_state = 404
-
 # SUPREME run
 print('SUPREME is setting up!')
 from lib import module
@@ -111,7 +109,7 @@ if os.path.exists(file):
     with open(file, 'rb') as f:
         train_valid_idx, test_idx = pickle.load(f)
 else:
-    train_valid_idx, test_idx= train_test_split(np.arange(len(labels)), test_size=0.20, shuffle=True, stratify=labels, random_state=random_state)
+    train_valid_idx, test_idx= train_test_split(np.arange(len(labels)), test_size=0.20, shuffle=True, stratify=labels)
 
 
 start = time.time()
