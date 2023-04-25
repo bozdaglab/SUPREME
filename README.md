@@ -13,6 +13,13 @@ First, SUPREME generates network-specific patient embeddings from each datatype 
 
 ---
 
+## For quick testing of SUPREME
+Adjust the following hyperparameters (lines 10-13, 23):
+  - reduce `max_epochs`, `xtimes`, and `xtimes2` to a small number such as 2.
+  - keep only one element in `learning_rates` such as [0.01]
+  - keep only one element in `hidden_sizes` such as [32]
+
+
 ## How to run SUPREME?
 
 Use `SUPREME.py` to run SUPREME.
@@ -38,12 +45,6 @@ Combination 6 ['clinical', 'cna', 'exp'] >  selected parameters = {'hidden_layer
 It took 532.6 seconds in total.
 SUPREME is done.
 ```
-
-## For quick testing of SUPREME
-Adjust the following hyperparameters (lines 10-13, 23):
-  - reduce `max_epochs`, `xtimes`, and `xtimes2` to a small number such as 2.
-  - keep only one element in `learning_rates` such as [0.01]
-  - keep only one element in `hidden_sizes` such as [32]
 
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
