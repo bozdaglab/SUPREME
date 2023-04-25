@@ -82,14 +82,14 @@ Files under the *SUPREME_sample_data_results* folder:
   - `boruta_top_features`: the number of top raw features to be integrated as raw features if `optional_feat_selection` and `addRawFeat` are *True*; otherwise ignored.
   - `optional_feat_selection`: *True* or *False*: If *True*, the top `boruta_top_features` features from each combination of integrated networks are added as raw features; if *False*, all the raw features are added to the embedding. (considered only if `addRawFeat` is *True*)
   
-- Adjust the following hyperparameters (lines 8-15):
+- Adjust the following hyperparameters (lines 10-13, 19, 23-25):
   - `max_epochs`: maximum number of epoch (default is 500.)
   - `min_epochs`: minimum number of epoch (default is 200.)
   - `patience`: patience for early stopping (default is 30.)
-  - `learning_rate`: learning rate (default is 0.001.)
-  - `hidden_size`: hidden size (default is 256.)
-  - `xtimes`: the number of SUPREME runs to select the best hyperparameter combination during hyperparameter tuning as part of Randomized Search (default: 50, should be more than 1.)
-  - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination, used to generate the median statistics (default: 10, should be more than 1.) 
+  - `learning_rates`: list of learning rates to tune GCN's hyperparameters (default is [0.01, 0.001, 0.0001].)
+  - `hidden_sizes`: list of hidden sizes to tune GCN's hyperparameters (default is [32, 64, 128, 256].)
+  - `xtimes`: the number of SUPREME runs to select the best hyperparameter combination during hyperparameter tuning as part of Randomized Search (default is 50, should be more than 1.)
+  - `xtimes2`: the number of SUPREME runs for the selected hyperparameter combination, used to generate the median statistics (default: 10) 
   - `boruta_runs`: the number of times Boruta runs to determine feature significance (default: 100, should be more than 1) (considered only if `addRawFeat` and `optional_feat_selection` are *True*, or if any of the values in `feature_selection_per_network` are *True*)
  
 ---
