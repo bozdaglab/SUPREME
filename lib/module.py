@@ -2,7 +2,6 @@ import os
 import torch.nn.functional as F
 import torch
 from torch_geometric.nn import GCNConv
-from openpyxl import load_workbook
 from collections import Counter
 
 class Net(torch.nn.Module):
