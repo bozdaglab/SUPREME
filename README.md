@@ -39,6 +39,12 @@ It took 532.6 seconds in total.
 SUPREME is done.
 ```
 
+## For quick testing of SUPREME
+Adjust the following hyperparameters (lines 10-13, 23):
+  - reduce `max_epochs`, `xtimes`, and `xtimes2` to a small number such as 2.
+  - keep only one element in `learning_rates` such as [0.01]
+  - keep only one element in `hidden_sizes` such as [32]
+
 ### Input files: 
 Files under the *sample_data* folder under *data* folder: 
 - `labels.pkl`: Labels of ordered samples (*i*th row has the label of sample with index *i*). First column is label starting from 0 till {number of subtype}-1. First row contains column name.
