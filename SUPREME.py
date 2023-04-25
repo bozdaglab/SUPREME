@@ -1,29 +1,37 @@
 # Options
 addRawFeat = True
 base_path = ''
-feature_networks_integration = ['clinical', 'cna', 'exp']
-node_networks = ['clinical', 'cna', 'exp']
-int_method = 'MLP' # 'MLP' or 'XGBoost' or 'RF' or 'SVM'
-xtimes = 50 
-xtimes2 = 10 
+feature_networks_integration = ['clinical', 'cna', 'exp'] # datatypes to concatanate node features from
+node_networks = ['clinical', 'cna', 'exp'] # datatypes to use networks from
+int_method = 'MLP' # Machine Learning method to integrate node embeddings: 'MLP' or 'XGBoost' or 'RF' or 'SVM'
 
+
+# optimize for hyperparameter tuning
+learning_rates = [0.01, 0.001, 0.0001] # learning rates to tune for GCN
+hid_sizes = [32, 64, 128, 256] # hidden sizes to tune for GCN
+xtimes = 50 #number of times Machine Learning algorithm will be tuned for each combination
+xtimes2 = 10 # number of times each evaluation metric will be repeated (for standard deviation of evaluation metrics)
+
+# optimize for optional feature selection of node features
 feature_selection_per_network = [False, False, False]
 top_features_per_network = [50, 50, 50]
 optional_feat_selection = False
 boruta_runs = 100
 boruta_top_features = 50
 
+# fixed
 max_epochs = 500
 min_epochs = 200
 patience = 30
-learning_rate = 0.001
-hidden_size = 256 
+
+# fixed to get the same results from the tool each time
+random_state = 404
 
 # SUPREME run
 print('SUPREME is setting up!')
 from lib import module
 import time
-import os, pyreadr, itertools
+import os, itertools
 import pickle5 as pickle
 from sklearn.metrics import f1_score, accuracy_score
 import statistics
@@ -57,9 +65,7 @@ if ((True in feature_selection_per_network) or (optional_feat_selection == True)
 # Parser
 parser = argparse.ArgumentParser(description='''An integrative node classification framework, called SUPREME 
 (a subtype prediction methodology), that utilizes graph convolutions on multiple datatype-specific networks that are annotated with multiomics datasets as node features. 
-This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks.
-In our work, SUPREME was applied specifically to the breast cancer subtype prediction problem by applying convolution on patient similarity networks
-constructed based on multiple biological datasets from breast tumor samples.''')
+This framework is model-agnostic and could be applied to any classification problem with properly processed datatypes and networks.''')
 parser.add_argument('-data', "--data_location", nargs = 1, default = ['sample_data'])
 
 args = parser.parse_args()
@@ -96,7 +102,6 @@ data_path_node =  base_path + 'data/' + dataset_name +'/'
 run_name = 'SUPREME_'+  dataset_name + '_results'
 save_path = base_path + run_name + '/'
 
-
 if not os.path.exists(base_path + run_name):
     os.makedirs(base_path + run_name + '/')
 
@@ -111,13 +116,12 @@ if os.path.exists(file):
 else:
     train_valid_idx, test_idx= train_test_split(np.arange(len(labels)), test_size=0.20, shuffle=True, stratify=labels)
 
-
 start = time.time()
 
 is_first = 0
 
 print('SUPREME is running..')
-            
+# Node feature generation - Concatenating node features from all the input datatypes            
 for netw in node_networks:
     file = base_path + 'data/' + dataset_name +'/'+ netw +'.pkl'
     with open(file, 'rb') as f:
@@ -166,12 +170,66 @@ for netw in node_networks:
     else:
         new_x = torch.cat((new_x, torch.tensor(values, device=device).float()), dim=1)
     
+# Node embedding generation using GCN for each input network with hyperparameter tuning   
 for n in range(len(node_networks)):
     netw_base = node_networks[n]
     with open(data_path_node + 'edges_' + netw_base + '.pkl', 'rb') as f:
         edge_index = pickle.load(f)
     best_ValidLoss = np.Inf
+    
+    for learning_rate in learning_rates:
+        for hid_size in hid_sizes:
+            av_valid_losses = list()
 
+            for ii in range(xtimes2):
+                data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values, device=device).long(),
+                            edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values, device=device).float(), y=labels) 
+                X = data.x[train_valid_idx]
+                y = data.y[train_valid_idx]
+                rskf = RepeatedStratifiedKFold(n_splits=4, n_repeats=1)
+
+                for train_part, valid_part in rskf.split(X, y):
+                    train_idx = train_valid_idx[train_part]
+                    valid_idx = train_valid_idx[valid_part]
+                    break
+
+                train_mask = np.array([i in set(train_idx) for i in range(data.x.shape[0])])
+                valid_mask = np.array([i in set(valid_idx) for i in range(data.x.shape[0])])
+                data.valid_mask = torch.tensor(valid_mask, device=device)
+                data.train_mask = torch.tensor(train_mask, device=device)
+                test_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
+                data.test_mask = torch.tensor(test_mask, device=device)
+
+                in_size = data.x.shape[1]
+                out_size = torch.unique(data.y).shape[0]
+                model = module.Net(in_size=in_size, hid_size=hid_size, out_size=out_size)
+                optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+                min_valid_loss = np.Inf
+                patience_count = 0
+
+                for epoch in range(max_epochs):
+                    emb = train()
+                    this_valid_loss, emb = validate()
+
+                    if this_valid_loss < min_valid_loss:
+                        min_valid_loss = this_valid_loss
+                        patience_count = 0
+                    else:
+                        patience_count += 1
+
+                    if epoch >= min_epochs and patience_count >= patience:
+                        break
+
+                av_valid_losses.append(min_valid_loss.item())
+
+            av_valid_loss = round(statistics.median(av_valid_losses), 3)
+            
+            if av_valid_loss < best_ValidLoss:
+                best_ValidLoss = av_valid_loss
+                best_emb_lr = learning_rate
+                best_emb_hs = hid_size
+                
     data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values, device=device).long(),
                 edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values, device=device).float(), y=labels) 
     X = data.x[train_valid_idx]
@@ -184,8 +242,8 @@ for n in range(len(node_networks)):
     
     in_size = data.x.shape[1]
     out_size = torch.unique(data.y).shape[0]
-    model = module.Net(in_size=in_size, hid_size=hidden_size, out_size=out_size)
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    model = module.Net(in_size=in_size, hid_size=best_emb_hs, out_size=out_size)
+    optimizer = torch.optim.Adam(model.parameters(), lr=best_emb_lr)
 
     min_valid_loss = np.Inf
     patience_count = 0
@@ -210,16 +268,21 @@ for n in range(len(node_networks)):
         pickle.dump(selected_emb, f)
         pd.DataFrame(selected_emb).to_csv(emb_file[:-4] + '.csv')
     
+start2 = time.time()    
+print('It took ' + str(round(start2 - start, 1)) + ' seconds for node embedding generation (' + str(len(learning_rates)*len(hid_sizes))+ ' trials for ' + str(len(node_networks)) + ' seperate GCNs).')
+
+print('SUPREME is integrating the embeddings..')
     
+# Running Machine Learning for each possible combination of input network
+# Input for Machine Learning algorithm is the concatanation of node embeddings (specific to each combination) and node features (if node feature integration is True)    
 addFeatures = []
 t = range(len(node_networks))
 trial_combs = []
 for r in range(1, len(t) + 1):
     trial_combs.extend([list(x) for x in itertools.combinations(t, r)])
 
-
 for trials in range(len(trial_combs)):
-    node_networks2 = [node_networks[i] for i in trial_combs[trials]] # list(set(a) & set(feature_networks))
+    node_networks2 = [node_networks[i] for i in trial_combs[trials]]
     netw_base = node_networks2[0]
     emb_file = save_path + 'Emb_' +  netw_base + '.pkl'
     with open(emb_file, 'rb') as f:
@@ -386,5 +449,5 @@ for trials in range(len(trial_combs)):
 
 
 end = time.time()
-print('It took ' + str(round(end - start, 1)) + ' seconds for all runs.')
+print('It took ' + str(round(end - start, 1)) + ' seconds in total.')
 print('SUPREME is done.')
