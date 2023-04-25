@@ -133,4 +133,5 @@ torch-scatter             2.0.9                    pypi_0    pypi
 torch-sparse              0.6.12                   pypi_0    pypi
 torchaudio                0.10.2                 py36_cpu  [cpuonly]  pytorch
 torchvision               0.11.3                 py36_cpu  [cpuonly]  pytorch
+xgboost                   1.5.2                    pypi_0    pypi
 ```
