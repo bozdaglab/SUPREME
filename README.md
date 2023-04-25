@@ -67,6 +67,8 @@ Files under the *SUPREME_sample_data_results* folder:
 
 ### Files under *lib* folder:
 - `module.py`: Graph Convolutional Neural Network-related module.
+- `SUPREME_simNetworkGen.R`: R code to generate similarity networks from the given datatypes.
+
 ---
 
 ## How to customize SUPREME?
