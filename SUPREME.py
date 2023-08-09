@@ -215,6 +215,7 @@ for n in range(len(node_networks)):
                     if this_valid_loss < min_valid_loss:
                         min_valid_loss = this_valid_loss
                         patience_count = 0
+                        this_emb = emb
                     else:
                         patience_count += 1
 
@@ -229,40 +230,9 @@ for n in range(len(node_networks)):
                 best_ValidLoss = av_valid_loss
                 best_emb_lr = learning_rate
                 best_emb_hs = hid_size
-                
-    data = Data(x=new_x, edge_index=torch.tensor(edge_index[edge_index.columns[0:2]].transpose().values, device=device).long(),
-                edge_attr=torch.tensor(edge_index[edge_index.columns[2]].transpose().values, device=device).float(), y=labels) 
-    X = data.x[train_valid_idx]
-    y = data.y[train_valid_idx]
+                selected_emb = this_emb
+
     
-    train_mask = np.array([i in set(train_valid_idx) for i in range(data.x.shape[0])])
-    data.train_mask = torch.tensor(train_mask, device=device)
-    valid_mask = np.array([i in set(test_idx) for i in range(data.x.shape[0])])
-    data.valid_mask = torch.tensor(valid_mask, device=device)
-    
-    in_size = data.x.shape[1]
-    out_size = torch.unique(data.y).shape[0]
-    model = module.Net(in_size=in_size, hid_size=best_emb_hs, out_size=out_size)
-    optimizer = torch.optim.Adam(model.parameters(), lr=best_emb_lr)
-
-    min_valid_loss = np.Inf
-    patience_count = 0
-                
-    for epoch in range(max_epochs):
-        emb = train()
-        this_valid_loss, emb = validate()
-
-        if this_valid_loss < min_valid_loss:
-            min_valid_loss = this_valid_loss
-            patience_count = 0
-            selected_emb = emb
-        else:
-            patience_count += 1
-
-        if epoch >= min_epochs and patience_count >= patience:
-            break
-
-
     emb_file = save_path + 'Emb_' +  netw_base + '.pkl'
     with open(emb_file, 'wb') as f:
         pickle.dump(selected_emb, f)
